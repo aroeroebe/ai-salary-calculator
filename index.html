@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>実質時給計算機 — AIライター向け</title>
+<meta name="description" content="AIライター向け 実質時給計算機。文字単価・作業時間・修正回数から請求額と実質時給を算出します。">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1a1a2e;
-    --paper: #f5f0e8;
-    --cream: #ede8dc;
+    --ink:    #1a1a2e;
+    --paper:  #f5f0e8;
     --accent: #c84b31;
-    --gold: #d4a853;
-    --muted: #7a7468;
-    --good: #2d6a4f;
-    --warn: #e76f51;
+    --gold:   #d4a853;
+    --muted:  #7a7468;
+    --good:   #2d6a4f;
+    --warn:   #e76f51;
     --border: rgba(26,26,46,0.12);
     --shadow: 0 4px 24px rgba(26,26,46,0.08);
   }
@@ -27,324 +27,301 @@
     background-color: var(--paper);
     color: var(--ink);
     min-height: 100vh;
-    padding: 0;
     background-image:
       repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px),
       repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px);
   }
 
+  /* Header */
   header {
-    background-color: var(--ink);
-    color: var(--paper);
-    padding: 28px 24px 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+    background-color: var(--ink); color: var(--paper);
+    padding: 28px 24px 24px; text-align: center;
+    position: relative; overflow: hidden;
   }
-
   header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: rgba(212,168,83,0.15);
-    pointer-events: none;
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(212,168,83,0.15); pointer-events: none;
   }
-
   header::after {
-    content: '';
-    position: absolute;
-    bottom: -60px; left: -20px;
-    width: 140px; height: 140px;
-    border-radius: 50%;
-    background: rgba(200,75,49,0.12);
-    pointer-events: none;
+    content: ''; position: absolute; bottom: -60px; left: -20px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: rgba(200,75,49,0.12); pointer-events: none;
   }
-
   .header-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 8px;
   }
-
   header h1 {
     font-family: 'DM Serif Display', serif;
     font-size: clamp(22px, 5vw, 34px);
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-weight: 400; letter-spacing: -0.01em; line-height: 1.2;
   }
+  header p { font-size: 13px; color: rgba(245,240,232,0.55); margin-top: 8px; }
 
-  header p {
-    font-size: 13px;
-    color: rgba(245,240,232,0.55);
-    margin-top: 8px;
-    font-weight: 400;
-  }
+  /* Layout */
+  .container { max-width: 540px; margin: 0 auto; padding: 32px 20px 60px; }
 
-  .container {
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 32px 20px 60px;
-  }
-
+  /* Card */
   .card {
-    background: #fff;
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    overflow: hidden;
+    background: #fff; border-radius: 2px;
+    border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
   }
-
-  .card-section {
-    padding: 24px 24px 20px;
-    border-bottom: 1px solid var(--border);
-  }
+  .card-section { padding: 24px 24px 20px; border-bottom: 1px solid var(--border); }
 
   .section-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
   }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .field {
-    margin-bottom: 16px;
-  }
-
+  /* Fields */
+  .field { margin-bottom: 16px; }
   .field:last-child { margin-bottom: 0; }
-
   label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: 0.02em;
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px; letter-spacing: 0.02em;
   }
-
-  .input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
+  .input-wrap { position: relative; display: flex; align-items: center; }
   input[type="number"] {
-    width: 100%;
-    padding: 10px 40px 10px 14px;
-    font-family: 'DM Mono', monospace;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1.5px solid var(--border);
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%; padding: 10px 40px 10px 14px;
+    font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+    color: var(--ink); background: var(--paper);
+    border: 1.5px solid var(--border); border-radius: 2px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     -moz-appearance: textfield;
   }
-
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
   input[type="number"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
-    background: #fff;
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,75,49,0.1); background: #fff;
   }
-
   .unit {
-    position: absolute;
-    right: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    pointer-events: none;
+    position: absolute; right: 12px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--muted); pointer-events: none;
   }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .btn-area {
-    padding: 20px 24px;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 8px;
-  }
-
+  /* Buttons */
+  .btn-area { padding: 20px 24px; }
+  .btn-row { display: flex; gap: 8px; }
   button {
-    padding: 14px;
-    border: none;
-    border-radius: 2px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    position: relative;
-    overflow: hidden;
+    padding: 14px; border: none; border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 700;
+    letter-spacing: 0.06em; cursor: pointer;
+    transition: background 0.2s, opacity 0.2s, transform 0.1s;
+    position: relative; overflow: hidden;
   }
+  button:active:not(:disabled) { transform: scale(0.99); }
 
-  button:active { transform: scale(0.99); }
-
-  .btn-primary {
-    flex: 1;
-    background: var(--ink);
-    color: var(--paper);
-  }
-
+  .btn-primary { flex: 1; background: var(--ink); color: var(--paper); }
   .btn-primary:hover { background: #2d2d4e; }
-
   .btn-primary::after {
-    content: '→';
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    opacity: 0.5;
+    content: '→'; position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%); font-size: 16px; opacity: 0.5;
   }
-
   .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    padding: 14px 16px;
-    font-size: 12px;
-    letter-spacing: 0.04em;
+    background: transparent; color: var(--muted);
+    border: 1.5px solid var(--border); padding: 14px 16px;
+    font-size: 12px; letter-spacing: 0.04em;
+  }
+  .btn-ghost:hover:not(:disabled) { background: var(--paper); color: var(--ink); border-color: var(--muted); }
+  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Error */
+  .error-note {
+    display: none; margin-top: 16px; padding: 12px 16px;
+    background: rgba(200,75,49,0.08); border: 1.5px solid rgba(200,75,49,0.25);
+    border-radius: 2px; font-size: 13px; color: var(--accent); font-weight: 500;
   }
 
-  .btn-ghost:hover { background: var(--paper); color: var(--ink); border-color: var(--muted); }
-
-  /* Result */
+  /* Result card */
   .result-card {
-    margin-top: 20px;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    display: none;
-    animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1);
+    margin-top: 20px; background: #fff;
+    border: 1px solid var(--border); border-radius: 2px;
+    box-shadow: var(--shadow); overflow: hidden;
+    display: none; animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1);
   }
-
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
   .result-header {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 16px 24px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
+    background: var(--ink); padding: 16px 24px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
   }
-
   .result-body { padding: 0 24px 24px; }
 
   .hourly-big {
-    padding: 24px 0 20px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
+    padding: 24px 0 20px; border-bottom: 1px solid var(--border); text-align: center;
   }
-
-  .hourly-label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
+  .hourly-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 6px; }
   .hourly-value {
     font-family: 'DM Serif Display', serif;
-    font-size: clamp(42px, 10vw, 64px);
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-size: clamp(42px, 10vw, 64px); line-height: 1; letter-spacing: -0.02em;
   }
-
   .hourly-value .yen { font-size: 0.45em; vertical-align: super; margin-right: 4px; }
-
   .eval-badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 5px 16px;
-    border-radius: 40px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    display: inline-block; margin-top: 12px; padding: 5px 16px;
+    border-radius: 40px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .eval-good { background: rgba(45,106,79,0.1);   color: var(--good); }
+  .eval-norm { background: rgba(212,168,83,0.15);  color: #9a7000; }
+  .eval-warn { background: rgba(231,111,81,0.12);  color: var(--warn); }
+
+  /* Gauge */
+  .gauge-wrap { padding: 20px 0 18px; border-bottom: 1px solid var(--border); }
+  .gauge-section-label {
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .gauge-track {
+    position: relative; height: 8px;
+    background: var(--border); border-radius: 4px;
+  }
+  .gauge-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.65s cubic-bezier(0.22,1,0.36,1), background-color 0.4s;
+    max-width: 100%;
+  }
+  .gauge-ticks { position: relative; height: 28px; margin-top: 3px; }
+  .gauge-tick-label {
+    position: absolute; top: 0;
+    font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted);
+    transform: translateX(-50%); text-align: center; line-height: 1.4;
+  }
+  .gauge-tick-line {
+    position: absolute; top: -11px; width: 1px; height: 10px;
+    background: var(--muted); opacity: 0.3; transform: translateX(-50%);
   }
 
-  .eval-good  { background: rgba(45,106,79,0.1);  color: var(--good); }
-  .eval-norm  { background: rgba(212,168,83,0.15); color: #9a7000; }
-  .eval-warn  { background: rgba(231,111,81,0.12); color: var(--warn); }
-
+  /* Metrics */
   .metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 20px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 2px;
+    overflow: hidden; margin-top: 20px;
   }
+  .metric { background: var(--paper); padding: 14px 16px; }
+  .metric-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 4px; }
+  .metric-value { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: var(--ink); }
+  .metric-unit  { font-size: 11px; color: var(--muted); margin-left: 2px; }
 
-  .metric {
-    background: var(--paper);
-    padding: 14px 16px;
+  /* Share row */
+  .share-row {
+    display: flex; gap: 8px; margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
   }
-
-  .metric-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    margin-bottom: 4px;
+  .share-url-input {
+    flex: 1; padding: 9px 12px;
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 2px;
+    outline: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    cursor: default;
   }
-
-  .metric-value {
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--ink);
+  .btn-share {
+    padding: 9px 14px; font-size: 11px; letter-spacing: 0.08em;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px; cursor: pointer;
+    font-family: 'DM Mono', monospace; font-weight: 500;
+    transition: background 0.2s; white-space: nowrap;
   }
+  .btn-share:hover { background: #2d2d4e; }
 
-  .metric-unit {
-    font-size: 11px;
-    color: var(--muted);
-    margin-left: 2px;
+  /* Accordion base */
+  .accordion { margin-top: 8px; }
+  .accordion-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 15px 0 11px; border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase;
+    cursor: pointer; user-select: none; transition: color 0.15s;
   }
+  .accordion-toggle:hover { color: var(--ink); }
+  .accordion-arrow { transition: transform 0.2s; display: inline-block; }
+  .accordion-toggle.open .accordion-arrow { transform: rotate(90deg); }
+  .accordion-body {
+    display: none; animation: slideUp 0.25s ease;
+  }
+  .accordion-body.open { display: block; }
 
+  /* Reverse calc */
+  .reverse-inner {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 2px; padding: 20px; margin-bottom: 6px;
+  }
+  .reverse-result {
+    margin-top: 14px; padding: 14px 16px;
+    background: var(--paper); border-radius: 2px;
+    display: none;
+  }
+  .reverse-result strong {
+    font-family: 'DM Mono', monospace; font-size: 22px;
+    font-weight: 500; color: var(--ink); display: block; margin-bottom: 4px;
+  }
+  .reverse-result .sub { font-size: 11px; color: var(--muted); }
+
+  /* History */
+  .history-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 0 11px; border-top: 1px solid var(--border);
+    cursor: pointer; user-select: none;
+  }
+  .history-head-left {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .history-head:hover .history-head-left { color: var(--ink); }
+  .history-count {
+    background: var(--ink); color: var(--paper);
+    font-size: 9px; padding: 2px 6px; border-radius: 10px;
+  }
+  .history-clear-btn {
+    font-size: 11px; color: var(--muted); cursor: pointer;
+    font-family: 'DM Mono', monospace; padding: 3px 8px;
+    border-radius: 2px; border: 1px solid var(--border);
+    background: transparent; font-weight: 400; letter-spacing: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .history-clear-btn:hover { background: rgba(200,75,49,0.06); color: var(--accent); border-color: rgba(200,75,49,0.3); }
+  .history-body { display: none; animation: slideUp 0.25s ease; }
+  .history-body.open { display: block; }
+  .history-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+  .history-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; background: #fff;
+    border: 1px solid var(--border); border-radius: 2px;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .history-item:hover { border-color: var(--muted); }
+  .h-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .h-dot-good { background: var(--good); }
+  .h-dot-norm { background: #d4a853; }
+  .h-dot-warn { background: var(--warn); }
+  .h-info { flex: 1; min-width: 0; }
+  .h-hourly {
+    font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--ink);
+  }
+  .h-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .h-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); flex-shrink: 0; text-align: right; }
+  .h-restore { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; opacity: 0; transition: opacity 0.15s; margin-top: 2px; }
+  .history-item:hover .h-restore { opacity: 1; }
+  .history-empty { font-size: 12px; color: var(--muted); padding: 8px 0 14px; text-align: center; font-family: 'DM Mono', monospace; }
+
+  /* Responsive */
   @media (max-width: 400px) {
-    .field-row { grid-template-columns: 1fr; }
-    .metrics { grid-template-columns: 1fr; }
-    .btn-row { flex-direction: column; }
+    .field-row        { grid-template-columns: 1fr; }
+    .metrics          { grid-template-columns: 1fr; }
+    .btn-row          { flex-direction: column; }
     .btn-primary::after { display: none; }
+    .share-row        { flex-direction: column; }
   }
 </style>
 </head>
@@ -358,31 +335,30 @@
 
 <div class="container">
 
+  <!-- 入力カード -->
   <div class="card">
     <div class="card-section">
       <div class="section-title">案件情報</div>
-
       <div class="field-row">
         <div class="field">
-          <label>文字単価</label>
+          <label for="charPrice">文字単価</label>
           <div class="input-wrap">
-            <input type="number" id="charPrice" placeholder="1.5" min="0" step="0.1">
+            <input type="number" id="charPrice" placeholder="1.5" min="0" step="0.1" inputmode="decimal">
             <span class="unit">円</span>
           </div>
         </div>
         <div class="field">
-          <label>記事文字数</label>
+          <label for="charCount">記事文字数</label>
           <div class="input-wrap">
-            <input type="number" id="charCount" placeholder="3000" min="0">
+            <input type="number" id="charCount" placeholder="3000" min="0" inputmode="numeric">
             <span class="unit">字</span>
           </div>
         </div>
       </div>
-
       <div class="field">
-        <label>初回作業時間</label>
+        <label for="workTime">初回作業時間</label>
         <div class="input-wrap">
-          <input type="number" id="workTime" placeholder="90" min="0">
+          <input type="number" id="workTime" placeholder="90" min="0" inputmode="numeric">
           <span class="unit">分</span>
         </div>
       </div>
@@ -390,19 +366,18 @@
 
     <div class="card-section">
       <div class="section-title">修正情報</div>
-
       <div class="field-row">
         <div class="field">
-          <label>修正回数</label>
+          <label for="revCount">修正回数</label>
           <div class="input-wrap">
-            <input type="number" id="revCount" placeholder="2" min="0">
+            <input type="number" id="revCount" placeholder="2" min="0" inputmode="numeric">
             <span class="unit">回</span>
           </div>
         </div>
         <div class="field">
-          <label>修正1回あたりの時間</label>
+          <label for="revTime">修正1回あたりの時間</label>
           <div class="input-wrap">
-            <input type="number" id="revTime" placeholder="20" min="0">
+            <input type="number" id="revTime" placeholder="20" min="0" inputmode="numeric">
             <span class="unit">分</span>
           </div>
         </div>
@@ -412,34 +387,49 @@
     <div class="btn-area">
       <div class="btn-row">
         <button id="calcBtn" type="button" class="btn-primary">実質時給を計算する</button>
-        <button id="copyBtn" type="button" class="btn-ghost">コピー</button>
+        <button id="copyBtn" type="button" class="btn-ghost" disabled>コピー</button>
         <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
       </div>
     </div>
   </div>
 
-  <div id="errorNote" role="alert" aria-live="assertive" style="display:none;margin-top:16px;padding:12px 16px;background:rgba(200,75,49,0.08);border:1.5px solid rgba(200,75,49,0.25);border-radius:2px;font-size:13px;color:var(--accent);font-weight:500;"></div>
+  <!-- エラー -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
 
-  <div class="result-card" id="result" role="status" aria-live="polite">
+  <!-- 結果カード -->
+  <div class="result-card" id="result" role="status" aria-live="polite" aria-atomic="true">
     <div class="result-header">計算結果</div>
     <div class="result-body">
 
+      <!-- 時給大表示 -->
       <div class="hourly-big">
         <div class="hourly-label">実質時給</div>
-        <div class="hourly-value" id="hourlyVal">
-          <span class="yen">¥</span><span id="hourlyNum">0</span>
-        </div>
+        <div class="hourly-value"><span class="yen">¥</span><span id="hourlyNum">0</span></div>
         <div><span class="eval-badge" id="evalBadge"></span></div>
       </div>
 
+      <!-- ゲージ -->
+      <div class="gauge-wrap">
+        <div class="gauge-section-label">時給レンジ</div>
+        <div style="position:relative; padding: 0 0 0 0;">
+          <div class="gauge-track">
+            <div class="gauge-fill" id="gaugeFill" style="width:0%"></div>
+          </div>
+          <div class="gauge-ticks" id="gaugeTicks">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 内訳 -->
       <div class="metrics">
         <div class="metric">
           <div class="metric-label">請求額</div>
-          <div class="metric-value" id="billing">—<span class="metric-unit">円</span></div>
+          <div class="metric-value" id="billing" data-raw="0">—<span class="metric-unit">円</span></div>
         </div>
         <div class="metric">
           <div class="metric-label">総作業時間</div>
-          <div class="metric-value" id="totalTime">—<span class="metric-unit">分</span></div>
+          <div class="metric-value" id="totalTime" data-raw="0">—<span class="metric-unit">分</span></div>
         </div>
         <div class="metric">
           <div class="metric-label">初回作業</div>
@@ -451,6 +441,61 @@
         </div>
       </div>
 
+      <!-- 共有URL -->
+      <div class="share-row">
+        <input type="text" class="share-url-input" id="shareUrl" readonly placeholder="計算後にURLが生成されます">
+        <button type="button" class="btn-share" id="shareBtn">URLコピー</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 逆算セクション -->
+  <div class="accordion">
+    <div class="accordion-toggle" id="reverseToggle">
+      <span class="accordion-arrow">▶</span>
+      逆算 — 目標時給から最大作業時間を計算
+    </div>
+    <div class="accordion-body" id="reverseBody">
+      <div class="reverse-inner">
+        <div class="field-row">
+          <div class="field">
+            <label for="targetHourly">目標時給</label>
+            <div class="input-wrap">
+              <input type="number" id="targetHourly" placeholder="1500" min="0" inputmode="numeric">
+              <span class="unit">円</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="reverseBilling">請求額</label>
+            <div class="input-wrap">
+              <input type="number" id="reverseBilling" placeholder="4500" min="0" inputmode="numeric">
+              <span class="unit">円</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="reverseCalcBtn" class="btn-primary" style="width:100%;margin-top:4px;">最大作業時間を計算</button>
+        <div class="reverse-result" id="reverseResult">
+          <strong id="reverseMaxTime">—</strong>
+          <span class="sub" id="reverseSubText"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 履歴セクション -->
+  <div>
+    <div class="history-head" id="historyHead">
+      <div class="history-head-left">
+        <span id="historyArrow">▶</span>
+        計算履歴
+        <span class="history-count" id="historyCount">0</span>
+      </div>
+      <button type="button" class="history-clear-btn" id="historyClearBtn">全削除</button>
+    </div>
+    <div class="history-body" id="historyBody">
+      <div class="history-list" id="historyList"></div>
+      <div class="history-empty" id="historyEmpty">まだ履歴はありません</div>
     </div>
   </div>
 
@@ -458,58 +503,168 @@
 
 <script>
 (function () {
-  const el = id => document.getElementById(id);
-  const FIELDS = ['charPrice', 'charCount', 'workTime', 'revCount', 'revTime'];
-  const LS_KEY = 'ai_writer_jikyuu_v1';
+  var el = function(id) { return document.getElementById(id); };
+  var FIELDS  = ['charPrice','charCount','workTime','revCount','revTime'];
+  var LS_KEY  = 'ai_writer_jikyuu_v1';
+  var LS_HIST = 'ai_writer_jikyuu_hist_v1';
+  var MAX_HIST = 5;
+  var GAUGE_MAX = 4000;
 
   function fmt(n) { return Math.round(n).toLocaleString('ja-JP'); }
+  function fmtF(n) { return (+n.toFixed(1)).toLocaleString('ja-JP'); }
 
   function parseClamp(id) {
-    const v = parseFloat(el(id).value);
+    var v = parseFloat(el(id).value);
     return isFinite(v) ? Math.max(0, v) : 0;
   }
 
-  // localStorage
+  /* localStorage inputs */
   function saveInputs() {
-    const obj = {};
-    FIELDS.forEach(k => { obj[k] = el(k).value; });
+    var obj = {};
+    FIELDS.forEach(function(k) { obj[k] = el(k).value; });
     try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch(e) {}
   }
-
   function loadInputs() {
     try {
-      const raw = localStorage.getItem(LS_KEY);
+      var raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
-      const obj = JSON.parse(raw);
-      FIELDS.forEach(k => { if (obj[k] !== undefined) el(k).value = obj[k]; });
+      var obj = JSON.parse(raw);
+      FIELDS.forEach(function(k) { if (obj[k] !== undefined) el(k).value = obj[k]; });
     } catch(e) {}
   }
 
+  /* error */
   function showError(msg) {
-    const note = el('errorNote');
+    var note = el('errorNote');
     note.textContent = msg;
     note.style.display = 'block';
     el('result').style.display = 'none';
+    el('copyBtn').disabled = true;
   }
-
   function clearError() {
-    const note = el('errorNote');
+    var note = el('errorNote');
     note.textContent = '';
     note.style.display = 'none';
   }
 
+  /* URL share */
+  function buildShareUrl(cp, cc, wt, rc, rt) {
+    var params = 'cp=' + cp + '&cc=' + cc + '&wt=' + wt + '&rc=' + rc + '&rt=' + rt;
+    return location.href.split('?')[0] + '?' + params;
+  }
+  function loadFromUrl() {
+    var search = location.search;
+    if (!search || search.indexOf('cp=') === -1) return false;
+    var params = {};
+    search.slice(1).split('&').forEach(function(pair) {
+      var kv = pair.split('=');
+      params[kv[0]] = decodeURIComponent(kv[1] || '');
+    });
+    var map = {charPrice:'cp', charCount:'cc', workTime:'wt', revCount:'rc', revTime:'rt'};
+    var found = false;
+    Object.keys(map).forEach(function(field) {
+      var p = map[field];
+      if (params[p] !== undefined) { el(field).value = params[p]; found = true; }
+    });
+    return found;
+  }
+
+  /* gauge */
+  function renderGaugeTicks() {
+    var ticks = el('gaugeTicks');
+    ticks.innerHTML = '';
+    var markers = [
+      { val: 1013, label: '最低賃金\n¥1,013' },
+      { val: 1200, label: '普通\n¥1,200' },
+      { val: 2000, label: '良好\n¥2,000' }
+    ];
+    markers.forEach(function(m) {
+      var pct = (m.val / GAUGE_MAX * 100).toFixed(2);
+      var line = document.createElement('div');
+      line.className = 'gauge-tick-line';
+      line.style.left = pct + '%';
+      ticks.appendChild(line);
+      var label = document.createElement('span');
+      label.className = 'gauge-tick-label';
+      label.style.left = pct + '%';
+      label.innerHTML = m.label.replace('\n', '<br>');
+      ticks.appendChild(label);
+    });
+  }
+  function updateGauge(hourly) {
+    var pct = Math.min(hourly / GAUGE_MAX * 100, 100);
+    var fill = el('gaugeFill');
+    fill.style.width = pct + '%';
+    if (hourly >= 2000)       fill.style.backgroundColor = 'var(--good)';
+    else if (hourly >= 1200)  fill.style.backgroundColor = '#d4a853';
+    else                      fill.style.backgroundColor = 'var(--warn)';
+  }
+
+  /* history */
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch(e) { return []; }
+  }
+  function saveHistory(hist) {
+    try { localStorage.setItem(LS_HIST, JSON.stringify(hist)); } catch(e) {}
+  }
+  function pushHistory(entry) {
+    var hist = loadHistory();
+    hist.unshift(entry);
+    if (hist.length > MAX_HIST) hist.pop();
+    saveHistory(hist);
+    renderHistory();
+  }
+  function renderHistory() {
+    var hist = loadHistory();
+    el('historyCount').textContent = hist.length;
+    var list = el('historyList');
+    var empty = el('historyEmpty');
+    list.innerHTML = '';
+    if (hist.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    hist.forEach(function(h) {
+      var dotCls = h.hourly >= 2000 ? 'h-dot-good' : h.hourly >= 1200 ? 'h-dot-norm' : 'h-dot-warn';
+      var item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML =
+        '<div class="h-dot ' + dotCls + '"></div>' +
+        '<div class="h-info">' +
+          '<div class="h-hourly">&#165;' + fmt(h.hourly) +
+            '<span style="font-size:11px;color:var(--muted);font-weight:400">/時</span></div>' +
+          '<div class="h-meta">請求 &#165;' + fmt(h.billing) + ' &middot; 作業 ' + fmt(h.totalTime) + '分</div>' +
+        '</div>' +
+        '<div class="h-time">' + h.date + '<div class="h-restore">復元 &rarr;</div></div>';
+      item.addEventListener('click', function() { restoreFromHistory(h); });
+      list.appendChild(item);
+    });
+  }
+  function restoreFromHistory(h) {
+    el('charPrice').value = h.charPrice;
+    el('charCount').value = h.charCount;
+    el('workTime').value  = h.workTime;
+    el('revCount').value  = h.revCount;
+    el('revTime').value   = h.revTime;
+    saveInputs();
+    calculate();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* main calculate */
   function calculate() {
     saveInputs();
 
-    const charPrice = parseClamp('charPrice');
-    const charCount = parseClamp('charCount');
-    const workTime  = parseClamp('workTime');
-    const revCount  = parseClamp('revCount');
-    const revTime   = parseClamp('revTime');
+    var charPrice = parseClamp('charPrice');
+    var charCount = parseClamp('charCount');
+    var workTime  = parseClamp('workTime');
+    var revCount  = parseClamp('revCount');
+    var revTime   = parseClamp('revTime');
 
-    const billing   = charPrice * charCount;
-    const revTotal  = revCount * revTime;
-    const totalTime = workTime + revTotal;
+    var billing   = charPrice * charCount;
+    var revTotal  = revCount * revTime;
+    var totalTime = workTime + revTotal;
 
     if (totalTime <= 0) {
       showError('⚠ 総作業時間が0分です。初回作業時間か修正時間を入力してください。');
@@ -517,28 +672,59 @@
     }
     clearError();
 
-    const hourly = (billing / totalTime) * 60;
+    var hourly = (billing / totalTime) * 60;
 
-    let evalText = '', evalClass = '';
-    if (hourly >= 2000) {
-      evalText = '✦ 良好 — 高単価案件です'; evalClass = 'eval-good';
-    } else if (hourly >= 1200) {
-      evalText = '◈ 普通 — 標準的な時給水準'; evalClass = 'eval-norm';
-    } else {
-      evalText = '▲ 注意 — 時給が低めです'; evalClass = 'eval-warn';
-    }
+    var evalText = '', evalClass = '';
+    if (hourly >= 2000)      { evalText = '✦ 良好 — 高単価案件です';    evalClass = 'eval-good'; }
+    else if (hourly >= 1200) { evalText = '◈ 普通 — 標準的な時給水準'; evalClass = 'eval-norm'; }
+    else                     { evalText = '▲ 注意 — 時給が低めです';    evalClass = 'eval-warn'; }
+
+    /* DOM update — store raw values in data attributes to avoid double-unit on copy */
+    var billingRounded   = Math.round(billing);
+    var totalTimeRounded = Math.round(totalTime);
 
     el('hourlyNum').textContent = fmt(hourly);
-    el('billing').innerHTML     = fmt(billing)   + '<span class="metric-unit">円</span>';
-    el('totalTime').innerHTML   = fmt(totalTime) + '<span class="metric-unit">分</span>';
-    el('initTime').innerHTML    = fmt(workTime)  + '<span class="metric-unit">分</span>';
-    el('revTotal').innerHTML    = fmt(revTotal)  + '<span class="metric-unit">分</span>';
 
-    const badge = el('evalBadge');
+    var bEl = el('billing');
+    bEl.setAttribute('data-raw', billingRounded);
+    bEl.innerHTML = fmt(billingRounded) + '<span class="metric-unit">円</span>';
+
+    var tEl = el('totalTime');
+    tEl.setAttribute('data-raw', totalTimeRounded);
+    tEl.innerHTML = fmt(totalTimeRounded) + '<span class="metric-unit">分</span>';
+
+    el('initTime').innerHTML = fmt(Math.round(workTime))  + '<span class="metric-unit">分</span>';
+    el('revTotal').innerHTML = fmt(Math.round(revTotal))  + '<span class="metric-unit">分</span>';
+
+    var badge = el('evalBadge');
     badge.textContent = evalText;
-    badge.className   = 'eval-badge ' + evalClass;
+    badge.className = 'eval-badge ' + evalClass;
 
-    const resultEl = el('result');
+    updateGauge(hourly);
+
+    /* pre-fill reverse billing */
+    el('reverseBilling').value = billingRounded;
+    el('reverseResult').style.display = 'none';
+
+    /* share URL */
+    el('shareUrl').value = buildShareUrl(charPrice, charCount, workTime, revCount, revTime);
+
+    /* history */
+    var now = new Date();
+    var dateStr = (now.getMonth()+1) + '/' + now.getDate() + ' ' +
+                  String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    pushHistory({
+      hourly: Math.round(hourly),
+      billing: billingRounded,
+      totalTime: totalTimeRounded,
+      charPrice: charPrice, charCount: charCount,
+      workTime: workTime, revCount: revCount, revTime: revTime,
+      date: dateStr
+    });
+
+    el('copyBtn').disabled = false;
+
+    var resultEl = el('result');
     resultEl.style.display = 'block';
     resultEl.style.animation = 'none';
     void resultEl.offsetWidth;
@@ -546,44 +732,108 @@
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function resetAll() {
-    FIELDS.forEach(k => { el(k).value = ''; });
-    try { localStorage.removeItem(LS_KEY); } catch(e) {}
-    clearError();
-    el('result').style.display = 'none';
-  }
-
+  /* copy result — use data-raw to avoid double-unit */
   function copyResult() {
-    const resultEl = el('result');
-    if (resultEl.style.display !== 'block') return;
-    const lines = [
-      '実質時給: ¥' + el('hourlyNum').textContent + '/時',
-      '評価: '      + el('evalBadge').textContent,
-      '請求額: '    + el('billing').textContent + '円',
-      '総作業時間: ' + el('totalTime').textContent + '分',
-    ];
-    navigator.clipboard?.writeText(lines.join('\n')).then(() => {
-      const btn = el('copyBtn');
-      const prev = btn.textContent;
-      btn.textContent = '✓ コピー済み';
-      setTimeout(() => { btn.textContent = prev; }, 1400);
-    }).catch(() => {
-      alert('コピーに失敗しました。手動で選択してコピーしてください。');
+    var hourly    = el('hourlyNum').textContent;
+    var evalTxt   = el('evalBadge').textContent;
+    var billing   = el('billing').getAttribute('data-raw');
+    var totalTime = el('totalTime').getAttribute('data-raw');
+    var text = [
+      '実質時給: \u00a5' + hourly + '/\u6642',
+      '\u8a55\u4fa1: '   + evalTxt,
+      '\u8acb\u6c42\u984d: \u00a5' + Number(billing).toLocaleString('ja-JP') + '\u5186',
+      '\u7dcf\u4f5c\u696d\u6642\u9593: ' + Number(totalTime).toLocaleString('ja-JP') + '\u5206',
+    ].join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = el('copyBtn');
+      var prev = btn.textContent;
+      btn.textContent = '\u2713 \u30b3\u30d4\u30fc\u6e08\u307f';
+      setTimeout(function() { btn.textContent = prev; }, 1400);
+    }).catch(function() {
+      alert('\u30b3\u30d4\u30fc\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002\u624b\u52d5\u3067\u9078\u629e\u3057\u3066\u30b3\u30d4\u30fc\u3057\u3066\u304f\u3060\u3055\u3044\u3002');
     });
   }
 
-  // init
-  loadInputs();
-  el('calcBtn').addEventListener('click', calculate);
-  el('resetBtn').addEventListener('click', resetAll);
-  el('copyBtn').addEventListener('click', copyResult);
+  /* reset */
+  function resetAll() {
+    FIELDS.forEach(function(k) { el(k).value = ''; });
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    clearError();
+    el('result').style.display = 'none';
+    el('copyBtn').disabled = true;
+    el('reverseResult').style.display = 'none';
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+  }
 
-  FIELDS.forEach(id => {
-    el(id).addEventListener('keydown', function (e) {
+  /* share URL copy */
+  el('shareBtn').addEventListener('click', function() {
+    var url = el('shareUrl').value;
+    if (!url || url === '') return;
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = el('shareBtn');
+      var prev = btn.textContent;
+      btn.textContent = '\u2713 \u30b3\u30d4\u30fc';
+      setTimeout(function() { btn.textContent = prev; }, 1400);
+    }).catch(function() {
+      el('shareUrl').select();
+      try { document.execCommand('copy'); } catch(e) {}
+    });
+  });
+
+  /* reverse calc toggle */
+  el('reverseToggle').addEventListener('click', function() {
+    var body = el('reverseBody');
+    var toggle = el('reverseToggle');
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
+  });
+
+  el('reverseCalcBtn').addEventListener('click', function() {
+    var targetH  = parseFloat(el('targetHourly').value);
+    var revBill  = parseFloat(el('reverseBilling').value);
+    if (!isFinite(targetH) || targetH <= 0) { alert('目標時給を入力してください。'); return; }
+    if (!isFinite(revBill) || revBill <= 0) { alert('請求額を入力してください。'); return; }
+    var maxTime = revBill / targetH * 60;
+    el('reverseMaxTime').textContent = fmtF(maxTime) + ' 分以内';
+    el('reverseSubText').textContent =
+      '請求額 ¥' + fmt(Math.round(revBill)) + ' で時給 ¥' + fmt(Math.round(targetH)) + ' を達成するための上限作業時間';
+    el('reverseResult').style.display = 'block';
+  });
+
+  /* history toggle */
+  el('historyHead').addEventListener('click', function(e) {
+    if (e.target === el('historyClearBtn') || el('historyClearBtn').contains(e.target)) return;
+    var body = el('historyBody');
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    el('historyArrow').textContent = isOpen ? '▶' : '▼';
+  });
+  el('historyClearBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!confirm('履歴をすべて削除しますか？')) return;
+    try { localStorage.removeItem(LS_HIST); } catch(e) {}
+    renderHistory();
+  });
+
+  /* init */
+  renderGaugeTicks();
+  var fromUrl = loadFromUrl();
+  if (!fromUrl) loadInputs();
+  renderHistory();
+
+  el('calcBtn').addEventListener('click', calculate);
+  el('copyBtn').addEventListener('click', copyResult);
+  el('resetBtn').addEventListener('click', resetAll);
+
+  FIELDS.forEach(function(id) {
+    el(id).addEventListener('keydown', function(e) {
       if (e.key === 'Enter') { e.preventDefault(); calculate(); }
     });
     el(id).addEventListener('input', saveInputs);
   });
+
+  if (fromUrl) calculate();
 })();
 </script>
 </body>
