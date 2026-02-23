@@ -562,8 +562,7 @@
       '請求額: '    + el('billing').textContent + '円',
       '総作業時間: ' + el('totalTime').textContent + '分',
     ];
-    navigator.clipboard?.writeText(lines.join('
-')).then(() => {
+    navigator.clipboard?.writeText(lines.join('\n')).then(() => {
       const btn = el('copyBtn');
       const prev = btn.textContent;
       btn.textContent = '✓ コピー済み';
