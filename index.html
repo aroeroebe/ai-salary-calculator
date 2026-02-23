@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>実質時給計算機 — AIライター向け</title>
-<meta name="description" content="AIライター向け 実質時給計算機。文字単価・作業時間・修正回数から請求額と実質時給を算出します。">
+<title>実質時給計算機 — ライター向け</title>
+<meta name="description" content="ライター向け 実質時給計算機。文字単価・作業時間・修正回数から請求額と実質時給を算出します。">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
@@ -328,7 +328,7 @@
 <body>
 
 <header>
-  <div class="header-label">AIライター向けツール</div>
+  <div class="header-label">ライター向けツール</div>
   <h1>実質時給計算機</h1>
   <p>案件ごとの実質時給を正確に把握しよう</p>
 </header>
@@ -573,12 +573,20 @@
   function renderGaugeTicks() {
     var ticks = el('gaugeTicks');
     ticks.innerHTML = '';
-    var markers = [
-      { val: 1013, label: '最低賃金\n¥1,013' },
-      { val: 1200, label: '普通\n¥1,200' },
-      { val: 2000, label: '良好\n¥2,000' }
+    // 最低賃金は線のみ（ラベルなし）、普通と良好はラベルあり
+    var lines = [{ val: 1013 }];
+    var labels = [
+      { val: 1200, label: '普通<br>¥1,200' },
+      { val: 2000, label: '良好<br>¥2,000' }
     ];
-    markers.forEach(function(m) {
+    lines.forEach(function(m) {
+      var pct = (m.val / GAUGE_MAX * 100).toFixed(2);
+      var line = document.createElement('div');
+      line.className = 'gauge-tick-line';
+      line.style.left = pct + '%';
+      ticks.appendChild(line);
+    });
+    labels.forEach(function(m) {
       var pct = (m.val / GAUGE_MAX * 100).toFixed(2);
       var line = document.createElement('div');
       line.className = 'gauge-tick-line';
@@ -587,7 +595,7 @@
       var label = document.createElement('span');
       label.className = 'gauge-tick-label';
       label.style.left = pct + '%';
-      label.innerHTML = m.label.replace('\n', '<br>');
+      label.innerHTML = m.label;
       ticks.appendChild(label);
     });
   }
