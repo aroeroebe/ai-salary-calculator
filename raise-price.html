@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向け単価アップ診断ツール｜文字単価を上げたら月収はいくら増える？【無料】</title>
+<meta name="description" content="Webライターが文字単価を上げた場合の月収アップ額を自動計算できる無料ツール。現在の単価・文字数・本数を入力するだけで差額と年間収入の増加額がすぐ分かります。単価交渉の判断材料に。">
+<meta property="og:title" content="Webライター向け単価アップ診断ツール｜文字単価を上げたら月収はいくら増える？【無料】">
+<meta property="og:description" content="Webライターが文字単価を上げた場合の月収アップ額を自動計算できる無料ツール。差額と年間収入の増加額がすぐ分かります。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://astounding-mousse-d69b3e.netlify.app/raise-price.html">
+<meta property="og:image" content="https://astounding-mousse-d69b3e.netlify.app/ogp.jpg">
+<link rel="canonical" href="https://astounding-mousse-d69b3e.netlify.app/raise-price.html">
+<meta name="robots" content="index, follow">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向け単価アップ診断ツール",
+  "url": "https://astounding-mousse-d69b3e.netlify.app/raise-price.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "Webライターが文字単価を上げた場合の月収増加額を計算できる無料ツール。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<!-- GA4: replace G-XXXXXXXXXX with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #1a1a2e;
+    --paper:  #f5f0e8;
+    --accent: #c84b31;
+    --gold:   #d4a853;
+    --muted:  #7a7468;
+    --good:   #2d6a4f;
+    --border: rgba(26,26,46,0.12);
+    --shadow: 0 4px 24px rgba(26,26,46,0.08);
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px);
+  }
+
+  /* Header */
+  header {
+    background-color: var(--ink); color: var(--paper);
+    padding: 28px 24px 24px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(212,168,83,0.15); pointer-events: none;
+  }
+  header::after {
+    content: ''; position: absolute; bottom: -60px; left: -20px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: rgba(200,75,49,0.12); pointer-events: none;
+  }
+  .header-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 400; letter-spacing: -0.01em; line-height: 1.2;
+  }
+  header p { font-size: 13px; color: rgba(245,240,232,0.55); margin-top: 8px; }
+
+  /* Layout */
+  .container { max-width: 540px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* Card */
+  .card {
+    background: #fff; border-radius: 2px;
+    border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .card-section { padding: 24px 24px 20px; border-bottom: 1px solid var(--border); }
+
+  .section-title {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Fields */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px; letter-spacing: 0.02em;
+  }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  input[type="number"] {
+    width: 100%; padding: 10px 40px 10px 14px;
+    font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+    color: var(--ink); background: var(--paper);
+    border: 1.5px solid var(--border); border-radius: 2px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,75,49,0.1); background: #fff;
+  }
+  .unit {
+    position: absolute; right: 12px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--muted); pointer-events: none;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Button */
+  .btn-area { padding: 20px 24px; }
+  .btn-primary {
+    width: 100%; padding: 14px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px;
+    font-weight: 700; letter-spacing: 0.06em; cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary:hover { background: #2d2d4e; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary::after {
+    content: '→'; position: absolute; right: 18px; top: 50%;
+    transform: translateY(-50%); font-size: 16px; opacity: 0.5;
+  }
+
+  /* Error */
+  .error-note {
+    display: none; margin-top: 16px; padding: 12px 16px;
+    background: rgba(200,75,49,0.08); border: 1.5px solid rgba(200,75,49,0.25);
+    border-radius: 2px; font-size: 13px; color: var(--accent); font-weight: 500;
+  }
+
+  /* Result card */
+  .result-card {
+    margin-top: 20px; background: #fff;
+    border: 1px solid var(--border); border-radius: 2px;
+    box-shadow: var(--shadow); overflow: hidden;
+    display: none; animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-header {
+    background: var(--ink); padding: 16px 24px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+  }
+  .result-body { padding: 0 24px 24px; }
+
+  /* Difference big display */
+  .diff-big {
+    padding: 28px 0 22px; text-align: center; border-bottom: 1px solid var(--border);
+  }
+  .diff-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .diff-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(40px, 10vw, 62px); line-height: 1; letter-spacing: -0.02em;
+    color: var(--good);
+  }
+  .diff-value .yen { font-size: 0.45em; vertical-align: super; margin-right: 4px; }
+  .diff-value .per { font-size: 0.3em; vertical-align: baseline; color: var(--muted); margin-left: 6px; }
+
+  /* Motivational badge */
+  .motiv-badge {
+    display: inline-block; margin-top: 14px; padding: 6px 18px;
+    border-radius: 40px; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; background: rgba(45,106,79,0.1); color: var(--good);
+  }
+  .motiv-neutral { background: rgba(212,168,83,0.15); color: #9a7000; }
+  .motiv-caution { background: rgba(200,75,49,0.08); color: var(--accent); }
+
+  /* Metrics grid */
+  .metrics {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 2px;
+    overflow: hidden; margin-top: 20px;
+  }
+  .metric { background: var(--paper); padding: 16px; }
+  .metric-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 6px; }
+  .metric-value {
+    font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--ink);
+  }
+  .metric-value.highlight { color: var(--good); }
+  .metric-unit { font-size: 11px; color: var(--muted); margin-left: 2px; }
+
+  /* Arrow between metrics */
+  .metrics-arrow {
+    grid-column: 1 / -1; background: var(--paper);
+    padding: 6px; text-align: center; font-size: 14px; color: var(--muted);
+  }
+
+  /* Explain section */
+  .explain {
+    margin-top: 32px; background: #fff;
+    border: 1px solid var(--border); border-radius: 2px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .explain-header {
+    background: var(--ink); padding: 14px 24px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+  }
+  .explain-body { padding: 24px; }
+  .explain-body h2 {
+    font-family: 'DM Serif Display', serif; font-size: 18px;
+    font-weight: 400; margin-bottom: 12px; line-height: 1.4;
+  }
+  .explain-body p {
+    font-size: 13px; line-height: 1.8; color: #3a3a50; margin-bottom: 14px;
+  }
+  .explain-body p:last-child { margin-bottom: 0; }
+  .explain-body strong { color: var(--ink); font-weight: 700; }
+
+  .explain-points { margin: 16px 0; }
+  .explain-point {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px; line-height: 1.6; color: #3a3a50;
+  }
+  .explain-point:last-child { border-bottom: none; }
+  .explain-point-num {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--gold); font-weight: 500; flex-shrink: 0; padding-top: 2px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: block; text-align: center; margin-top: 28px;
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    color: var(--muted); text-decoration: none; letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--ink); }
+  .back-link::before { content: '← '; }
+
+  @media (max-width: 400px) {
+    .field-row { grid-template-columns: 1fr; }
+    .metrics   { grid-template-columns: 1fr; }
+    .metrics-arrow { display: none; }
+    .btn-primary::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">ライター向けツール</div>
+  <h1>Webライター向け<br>単価アップ診断シミュレーター</h1>
+  <p>単価を上げたら月収はいくら増える？</p>
+</header>
+
+<div class="container">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">現在の状況</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="currentPrice">現在の文字単価</label>
+          <div class="input-wrap">
+            <input type="number" id="currentPrice" placeholder="1.0" min="0" step="0.1" inputmode="decimal">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="targetPrice">上げたい単価</label>
+          <div class="input-wrap">
+            <input type="number" id="targetPrice" placeholder="2.0" min="0" step="0.1" inputmode="decimal">
+            <span class="unit">円</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="charCount">1記事あたりの文字数</label>
+          <div class="input-wrap">
+            <input type="number" id="charCount" placeholder="3000" min="0" inputmode="numeric">
+            <span class="unit">字</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="articleCount">月の記事本数</label>
+          <div class="input-wrap">
+            <input type="number" id="articleCount" placeholder="10" min="0" inputmode="numeric">
+            <span class="unit">本</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-area">
+      <button id="calcBtn" type="button" class="btn-primary">月収アップを計算する</button>
+    </div>
+  </div>
+
+  <!-- エラー -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード -->
+  <div class="result-card" id="result" role="status" aria-live="polite" aria-atomic="true">
+    <div class="result-header">シミュレーション結果</div>
+    <div class="result-body">
+
+      <!-- 差額ビッグ表示 -->
+      <div class="diff-big">
+        <div class="diff-label">月収アップ額</div>
+        <div class="diff-value">
+          <span class="yen">+¥</span><span id="diffNum">0</span><span class="per">/月</span>
+        </div>
+        <div><span class="motiv-badge" id="motivBadge"></span></div>
+      </div>
+
+      <!-- 月収比較グリッド -->
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">現在の月収</div>
+          <div class="metric-value" id="currentIncome">—<span class="metric-unit">円</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">単価アップ後の月収</div>
+          <div class="metric-value highlight" id="newIncome">—<span class="metric-unit">円</span></div>
+        </div>
+        <div class="metrics-arrow">↑</div>
+        <div class="metric">
+          <div class="metric-label">年間換算の差額</div>
+          <div class="metric-value highlight" id="yearDiff">—<span class="metric-unit">円</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">単価アップ率</div>
+          <div class="metric-value" id="priceRatio">—<span class="metric-unit">%</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain">
+    <div class="explain-header">単価アップが重要な理由</div>
+    <div class="explain-body">
+      <h2>文字単価は、ライターの時給を決める最重要指標です</h2>
+      <p>
+        ライターの収入は <strong>文字単価 × 文字数 × 本数</strong> で決まります。本数を増やすには時間が必要ですが、単価を上げれば同じ作業量でも収入が大きく変わります。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>作業量を変えずに収入を増やせる</strong>。月10本のまま単価を1円上げれば、文字数3,000字なら月3万円のアップになります。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>交渉は実績があれば十分可能</strong>。納品数・クライアントの満足度・専門性のアピールが単価交渉の武器になります。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>年収への影響は想像以上</strong>。月1万円の差が年12万円の差になります。3年継続すれば36万円の差です。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>高単価案件ほどクライアントの質も高い</strong>。指示が明確で修正が少なく、結果として実質時給もさらに上がりやすくなります。</span>
+        </div>
+      </div>
+      <p>
+        まずはこのシミュレーターで差額を「見える化」し、単価交渉の第一歩を踏み出しましょう。
+      </p>
+      <p style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:#3a3a50;line-height:1.8;">
+        関連ツール：<a href="ai-writer-calc.html" style="color:var(--accent);text-decoration:none;font-weight:700;">実質時給計算機</a>と組み合わせると、単価アップと実質時給の改善を両面から可視化できます。
+      </p>
+    </div>
+  </div>
+
+  <!-- 戻るリンク -->
+  <a href="index.html" class="back-link">ツール一覧へ戻る</a>
+
+</div>
+
+<script>
+(function () {
+  var el = function(id) { return document.getElementById(id); };
+
+  function fmt(n) { return Math.round(n).toLocaleString('ja-JP'); }
+  function parseClamp(id) {
+    var v = parseFloat(el(id).value);
+    return isFinite(v) ? Math.max(0, v) : 0;
+  }
+
+  function showError(msg) {
+    var note = el('errorNote');
+    note.textContent = msg;
+    note.style.display = 'block';
+    el('result').style.display = 'none';
+  }
+  function clearError() {
+    el('errorNote').textContent = '';
+    el('errorNote').style.display = 'none';
+  }
+
+  function calculate() {
+    /* GA4 tracking — safe even if gtag is undefined */
+    try {
+      if (typeof gtag === 'function') {
+        gtag('event', 'calculate', {
+          event_category: 'tool',
+          event_label: 'raise-price'
+        });
+      }
+    } catch(e) {}
+
+    var currentPrice  = parseClamp('currentPrice');
+    var targetPrice   = parseClamp('targetPrice');
+    var charCount     = parseClamp('charCount');
+    var articleCount  = parseClamp('articleCount');
+
+    if (currentPrice <= 0) { showError('⚠ 現在の文字単価を入力してください。'); return; }
+    if (targetPrice  <= 0) { showError('⚠ 上げたい単価を入力してください。'); return; }
+    if (charCount    <= 0) { showError('⚠ 1記事あたりの文字数を入力してください。'); return; }
+    if (articleCount <= 0) { showError('⚠ 月の記事本数を入力してください。'); return; }
+    if (targetPrice <= currentPrice) {
+      showError('⚠ 上げたい単価は現在の単価より高い値を入力してください。'); return;
+    }
+    clearError();
+
+    var currentIncome = currentPrice * charCount * articleCount;
+    var newIncome     = targetPrice  * charCount * articleCount;
+    var diff          = newIncome - currentIncome;
+    var yearDiff      = diff * 12;
+    var ratio         = ((targetPrice - currentPrice) / currentPrice * 100);
+
+    /* motivational message */
+    var motivText = '', motivClass = '';
+    if (diff > 50000) {
+      motivText  = '単価交渉は十分価値があります';
+      motivClass = '';
+    } else if (diff > 20000) {
+      motivText  = '少しの単価アップでも大きな差になります';
+      motivClass = 'motiv-neutral';
+    } else {
+      motivText  = 'まずはスキル強化と実績作りを意識しましょう';
+      motivClass = 'motiv-caution';
+    }
+
+    el('diffNum').textContent      = fmt(diff);
+    el('currentIncome').innerHTML  = fmt(Math.round(currentIncome)) + '<span class="metric-unit">円</span>';
+    el('newIncome').innerHTML      = fmt(Math.round(newIncome))     + '<span class="metric-unit">円</span>';
+    el('yearDiff').innerHTML       = fmt(Math.round(yearDiff))      + '<span class="metric-unit">円</span>';
+    el('priceRatio').innerHTML     = ratio.toFixed(1)               + '<span class="metric-unit">%</span>';
+
+    var badge = el('motivBadge');
+    badge.textContent = motivText;
+    badge.className   = 'motiv-badge ' + motivClass;
+
+    var resultEl = el('result');
+    resultEl.style.display = 'block';
+    resultEl.style.animation = 'none';
+    void resultEl.offsetWidth;
+    resultEl.style.animation = '';
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  el('calcBtn').addEventListener('click', calculate);
+
+  ['currentPrice','targetPrice','charCount','articleCount'].forEach(function(id) {
+    el(id).addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); calculate(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
