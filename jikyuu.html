@@ -610,9 +610,9 @@
 
   /* URL share */
   function buildShareUrl(cp, cc, wt, rc, rt) {
-    var params = 'cp=' + cp + '&cc=' + cc + '&wt=' + wt + '&rc=' + rc + '&rt=' + rt;
-    return location.href.split('?')[0] + '?' + params;
-  }
+  var params = 'cp=' + encodeURIComponent(cp) + '&cc=' + encodeURIComponent(cc) + '&wt=' + encodeURIComponent(wt) + '&rc=' + encodeURIComponent(rc) + '&rt=' + encodeURIComponent(rt);
+  return location.href.split('?')[0] + '?' + params;
+}
   function loadFromUrl() {
     var search = location.search;
     if (!search || search.indexOf('cp=') === -1) return false;
