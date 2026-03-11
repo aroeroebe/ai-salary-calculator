@@ -1,26 +1,53 @@
 /**
  * common.js — 共通コンポーネント
- * ページ読み込み時に自動実行:
- *   - パンくずナビ（ツールページのみ）
- *   - フッター
  *
- * 使い方: <body data-page="tool" data-title="実質時給計算機">
- *   data-page: "home" | "tool"
- *   data-title: ページ名（パンくず用）
+ * 自動で行うこと:
+ *   1. GA4スクリプトの挿入
+ *   2. ツールページのヘッダー生成
+ *   3. パンくずナビの挿入
+ *   4. フッターの挿入
+ *
+ * 各HTMLの<body>に以下を設定するだけ:
+ *   data-page     : "home" | "tool"
+ *   data-title    : ページ名（ヘッダーh1 & パンくず）
+ *   data-subtitle : ヘッダーの説明文（ツールページ）
  */
 
+/* ── 1. GA4 ── */
+var GA_ID = 'G-QZP3DCGL40';
+var _gaScript = document.createElement('script');
+_gaScript.async = true;
+_gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+document.head.appendChild(_gaScript);
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('config', GA_ID);
+
+/* ── 2〜4. コンポーネント ── */
 (function () {
   'use strict';
 
-  /* ── ページ情報 ── */
-  var body      = document.body;
-  var pageType  = body.getAttribute('data-page')  || 'home';
-  var pageTitle = body.getAttribute('data-title') || '';
+  var body         = document.body;
+  var pageType     = body.getAttribute('data-page')     || 'home';
+  var pageTitle    = body.getAttribute('data-title')    || '';
+  var pageSubtitle = body.getAttribute('data-subtitle') || '';
 
-  /* ── パンくずナビ（ツールページのみ） ── */
+  /* ── ツールヘッダー生成 ── */
+  function renderHeader() {
+    if (pageType !== 'tool') return;
+    var header = document.createElement('header');
+    header.className = 'page-header';
+    header.innerHTML =
+      '<div class="page-header-label">ライター向けツール</div>' +
+      '<h1>' + pageTitle + '</h1>' +
+      (pageSubtitle ? '<p>' + pageSubtitle + '</p>' : '');
+    document.body.insertBefore(header, document.body.firstChild);
+  }
+
+  /* ── パンくずナビ ── */
   function renderBreadcrumb() {
     if (pageType !== 'tool') return;
-
     var nav = document.createElement('nav');
     nav.className = 'breadcrumb-nav';
     nav.setAttribute('aria-label', 'パンくずリスト');
@@ -37,9 +64,7 @@
         '<span class="breadcrumb-sep" aria-hidden="true">/</span>' +
         '<span class="breadcrumb-item current" aria-current="page">' + pageTitle + '</span>' +
       '</div>';
-
-    /* ヘッダーの直後に挿入 */
-    var header = document.querySelector('header');
+    var header = document.querySelector('header.page-header');
     if (header && header.nextSibling) {
       header.parentNode.insertBefore(nav, header.nextSibling);
     } else if (header) {
@@ -60,7 +85,7 @@
     document.body.appendChild(footer);
   }
 
-  /* ── GA4 イベント送信ヘルパー（各ページから呼べる） ── */
+  /* ── GA4 イベント送信ヘルパー ── */
   window.trackCalc = function (label) {
     try {
       if (typeof gtag === 'function') {
@@ -71,6 +96,7 @@
 
   /* ── 初期化 ── */
   function init() {
+    renderHeader();
     renderBreadcrumb();
     renderFooter();
   }
