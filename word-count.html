@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向け文字数カウンター｜テキストを貼るだけで文字数・請求額を即計算【無料】</title>
+<meta name="description" content="Webライター向けの無料文字数カウンターツール。テキストを貼るだけで総文字数・請求額をリアルタイム計算。文字単価を入れれば請求額も即算出できます。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向け文字数カウンター｜テキストを貼るだけで文字数・請求額を即計算【無料】">
+<meta property="og:description" content="テキストを貼るだけで総文字数・請求額をリアルタイム計算できる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/word-count.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/word-count.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向け文字数カウンター",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/word-count.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "Webライター向けの無料文字数カウンターツール。テキストを貼るだけで総文字数・請求額をリアルタイム計算。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .textarea-main {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.8;
+    min-height: 160px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .textarea-main:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+  .textarea-counter {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+  .billing-row { transition: opacity 0.2s; }
+  .billing-row.hidden { opacity: 0.3; pointer-events: none; }
+</style>
+</head>
+<body data-page="tool" data-title="文字数カウンター" data-subtitle="テキストを貼るだけで文字数・請求額をリアルタイム計算">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">テキスト入力</div>
+      <div class="field">
+        <label for="inputText">カウントするテキスト</label>
+        <textarea id="inputText"
+          placeholder="ここに記事のテキストを貼り付けてください"
+          rows="8"
+          class="textarea-main"
+          aria-describedby="textareaCounter"></textarea>
+        <div class="textarea-counter" id="textareaCounter" aria-live="polite">0 文字</div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="section-title">文字単価（任意）</div>
+      <div class="field">
+        <label for="charPrice">入力すると請求額を自動計算します</label>
+        <div class="input-wrap">
+          <input type="number" id="charPrice" placeholder="1.5"
+                 min="0" step="0.1" inputmode="decimal"
+                 autocomplete="off">
+          <span class="unit">円</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示（バリデーション不要なので非表示のまま） -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード（リアルタイムのため最初から表示） -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">カウント結果</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">総文字数</div>
+          <div class="metric-value highlight" id="totalChars">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+        <div class="metric billing-row hidden" id="billingRow">
+          <div class="metric-label">請求額（総文字数 × 単価）</div>
+          <div class="metric-value highlight" id="billing">
+            —<span class="metric-unit">円</span>
+          </div>
+        </div>
+        <div class="metric billing-row hidden" id="priceRow">
+          <div class="metric-label">文字単価</div>
+          <div class="metric-value" id="priceDisplay">
+            —<span class="metric-unit">円/字</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">正確な文字数がライターの信頼をつくる</div>
+    <div class="explain-body">
+      <h2>文字数の把握は、案件管理の基本中の基本です</h2>
+      <p>
+        Webライターの仕事では、クライアントから「3,000字以上」などの文字数指定が入ることがほとんどです。<strong>納品前に正確な文字数を確認していないと、指定文字数の未達や請求ミスにつながることがあります。</strong>
+      </p>
+      <p>
+        このツールはテキストを貼り付けるだけでリアルタイムに集計します。文字単価を入力すれば請求額も即座に計算できるので、納品前の最終確認にそのままお使いいただけます。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>貼るだけで即カウント</strong>。ボタンを押す必要はありません。テキストを貼り付けた瞬間にリアルタイムで文字数が更新されます。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>請求額もその場で確認</strong>。文字単価を入力すれば総文字数 × 単価の請求額を自動計算します。見積もりや請求書作成の確認に役立ちます。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>指定文字数の未達を防ぐ</strong>。3,000字指定の案件で不足していないか、納品前に必ず確認する習慣をつけることでクライアントとのトラブルを防げます。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>実質時給の計算にも活用</strong>。文字数と作業時間を組み合わせると案件ごとの実質時給が分かります。割に合わない案件を早めに見極めることができます。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="real-jikyuu.html">実質時給計算機</a>と
+        <a href="raise-price.html">単価アップ診断</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:word-count');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_word-count_v1';
+
+  /* ── localStorage 保存・復元（文字単価のみ） ── */
+  function saveInputs() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({ charPrice: el('charPrice').value }));
+    } catch(e) {}
+  }
+  function loadInputs() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var obj = JSON.parse(raw);
+      if (obj.charPrice !== undefined) el('charPrice').value = obj.charPrice;
+    } catch(e) {}
+  }
+
+  /* ── GA イベント送信（30秒に1回のスロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('word-count');
+      lastTracked = now;
+    }
+  }
+  function calculate() {
+    var text  = el('inputText').value;
+    var total = text.length;
+
+    /* テキストエリア下のミニカウンター */
+    el('textareaCounter').textContent = total.toLocaleString('ja-JP') + ' 文字';
+
+    /* 総文字数 */
+    el('totalChars').innerHTML =
+      total.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+
+    /* 文字単価 → 請求額（任意） */
+    var priceRaw = parseFloat(el('charPrice').value);
+    var hasPrice = isFinite(priceRaw) && priceRaw > 0;
+
+    if (hasPrice) {
+      el('billing').innerHTML =
+        Math.round(total * priceRaw).toLocaleString('ja-JP') + '<span class="metric-unit">円</span>';
+      el('priceDisplay').innerHTML =
+        priceRaw.toFixed(1) + '<span class="metric-unit">円/字</span>';
+      el('billingRow').classList.remove('hidden');
+      el('priceRow').classList.remove('hidden');
+    } else {
+      el('billing').innerHTML      = '—<span class="metric-unit">円</span>';
+      el('priceDisplay').innerHTML = '—<span class="metric-unit">円/字</span>';
+      el('billingRow').classList.add('hidden');
+      el('priceRow').classList.add('hidden');
+    }
+
+    /* GA イベント（テキストがあるときのみ・30秒スロットル） */
+    if (total > 0) throttledTrack();
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    el('inputText').value = '';
+    el('charPrice').value = '';
+    el('textareaCounter').textContent = '0 文字';
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  loadInputs();
+  calculate();
+
+  /* ── イベント登録 ── */
+  el('inputText').addEventListener('input', calculate);
+  el('charPrice').addEventListener('input', function() {
+    saveInputs();
+    calculate();
+  });
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
