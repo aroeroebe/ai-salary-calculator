@@ -29,340 +29,35 @@
   "description": "Webライター・フリーランスライター向けの無料ツール集。実質時給と単価アップを可視化します。"
 }
 </script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink:    #1a1a2e;
-    --paper:  #f5f0e8;
-    --accent: #c84b31;
-    --gold:   #d4a853;
-    --muted:  #7a7468;
-    --good:   #2d6a4f;
-    --border: rgba(26,26,46,0.12);
-    --shadow: 0 4px 24px rgba(26,26,46,0.08);
-  }
-
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background-color: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px),
-      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(200,75,49,0.04) 31px, rgba(200,75,49,0.04) 32px);
-  }
-
-  /* ── Hero ── */
-  .hero {
-    background-color: var(--ink);
-    color: var(--paper);
-    padding: 64px 24px 56px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: ''; position: absolute; top: -60px; right: -60px;
-    width: 280px; height: 280px; border-radius: 50%;
-    background: rgba(212,168,83,0.1); pointer-events: none;
-  }
-  .hero::after {
-    content: ''; position: absolute; bottom: -80px; left: -40px;
-    width: 220px; height: 220px; border-radius: 50%;
-    background: rgba(200,75,49,0.1); pointer-events: none;
-  }
-  .hero-link{
-    display:block;
-    text-decoration:none;
-    color:inherit;
-  }
-  .hero-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px; letter-spacing: 0.24em;
-    color: var(--gold); text-transform: uppercase;
-    margin-bottom: 20px; position: relative;
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(26px, 6vw, 46px);
-    font-weight: 400; letter-spacing: -0.02em;
-    line-height: 1.2; margin-bottom: 20px;
-    position: relative;
-  }
-  .hero h1 em {
-    font-style: italic; color: var(--gold);
-  }
-  .hero-sub {
-    font-size: clamp(13px, 2vw, 15px);
-    color: rgba(245,240,232,0.6);
-    line-height: 1.8; max-width: 480px;
-    margin: 0 auto; position: relative;
-  }
-  .hero-badges {
-    display: flex; justify-content: center;
-    flex-wrap: wrap; gap: 8px;
-    margin-top: 28px; position: relative;
-  }
-  .hero-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px; letter-spacing: 0.1em;
-    padding: 5px 12px; border-radius: 20px;
-    border: 1px solid rgba(245,240,232,0.2);
-    color: rgba(245,240,232,0.55);
-  }
-
-  /* ── Container ── */
-  .container { max-width: 560px; margin: 0 auto; padding: 48px 20px 72px; }
-
-  /* ── Section title ── */
-  .section-label {
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.2em; color: var(--muted);
-    text-transform: uppercase; margin-bottom: 20px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* ── Tool cards ── */
-  .tools { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
-
-  .tool-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-  .tool-card:hover {
-    box-shadow: 0 8px 32px rgba(26,26,46,0.13);
-    transform: translateY(-2px);
-  }
-
-  .tool-card-header {
-    background: var(--ink);
-    padding: 14px 20px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .tool-number {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px; color: var(--gold);
-    line-height: 1; opacity: 0.7; flex-shrink: 0;
-  }
-  .tool-card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px; font-weight: 400;
-    color: var(--paper); letter-spacing: -0.01em;
-  }
-  .tool-card-tag {
-    margin-left: auto; flex-shrink: 0;
-    font-family: 'DM Mono', monospace; font-size: 9px;
-    letter-spacing: 0.1em; color: var(--gold);
-    border: 1px solid rgba(212,168,83,0.4);
-    padding: 3px 8px; border-radius: 10px;
-    text-transform: uppercase;
-  }
-
-  .tool-card-body { padding: 20px 20px 20px; flex: 1; }
-  .tool-card-desc {
-    font-size: 13px; color: #3a3a50;
-    line-height: 1.8; margin-bottom: 16px;
-  }
-  .tool-card-points {
-    display: flex; flex-direction: column; gap: 6px;
-    margin-bottom: 20px;
-  }
-  .tool-card-point {
-    display: flex; align-items: flex-start; gap: 8px;
-    font-size: 12px; color: var(--muted); line-height: 1.5;
-  }
-  .tool-card-point::before {
-    content: '→';
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; color: var(--gold);
-    flex-shrink: 0; margin-top: 1px;
-  }
-
-  .btn-tool {
-    display: block; width: 100%;
-    padding: 13px 20px;
-    background: var(--ink); color: var(--paper);
-    text-decoration: none; text-align: center;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
-    border-radius: 2px;
-    transition: background 0.2s;
-    position: relative; overflow: hidden;
-  }
-  .btn-tool:hover { background: #2d2d4e; }
-  .btn-tool::after {
-    content: ' →';
-    font-size: 14px; opacity: 0.6;
-  }
-
-  /* ── Explain section ── */
-  .explain {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    margin-bottom: 48px;
-  }
-  .explain-header {
-    background: var(--ink); padding: 14px 24px;
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
-  }
-  .explain-body { padding: 24px; }
-  .explain-body h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 19px; font-weight: 400;
-    line-height: 1.4; margin-bottom: 14px;
-  }
-  .explain-body p {
-    font-size: 13px; color: #3a3a50;
-    line-height: 1.9; margin-bottom: 14px;
-  }
-  .explain-body p:last-child { margin-bottom: 0; }
-  .explain-body strong { color: var(--ink); font-weight: 700; }
-
-  .explain-steps {
-    margin: 20px 0;
-    counter-reset: step;
-  }
-  .explain-step {
-    display: flex; gap: 14px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px; line-height: 1.7; color: #3a3a50;
-  }
-  .explain-step:last-child { border-bottom: none; }
-  .explain-step-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px; color: var(--gold);
-    font-weight: 500; flex-shrink: 0; padding-top: 2px;
-    min-width: 20px;
-  }
-
-  /* ── CTA ── */
-  .cta {
-    text-align: center;
-    padding: 32px 24px;
-    background: var(--ink);
-    border-radius: 2px;
-    box-shadow: var(--shadow);
-    margin-bottom: 48px;
-    position: relative; overflow: hidden;
-  }
-  .cta::before {
-    content: ''; position: absolute; top: -40px; right: -40px;
-    width: 160px; height: 160px; border-radius: 50%;
-    background: rgba(212,168,83,0.1); pointer-events: none;
-  }
-  .cta-label {
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.2em; color: var(--gold);
-    text-transform: uppercase; margin-bottom: 12px;
-    position: relative;
-  }
-  .cta h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(20px, 5vw, 28px);
-    font-weight: 400; color: var(--paper);
-    line-height: 1.3; margin-bottom: 10px;
-    position: relative;
-  }
-  .cta p {
-    font-size: 13px; color: rgba(245,240,232,0.55);
-    margin-bottom: 24px; position: relative;
-  }
-  .cta-buttons {
-    display: flex; gap: 10px; justify-content: center;
-    flex-wrap: wrap; position: relative;
-  }
-  .btn-cta {
-    display: inline-block;
-    padding: 13px 24px;
-    text-decoration: none;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 13px; font-weight: 700;
-    letter-spacing: 0.04em; border-radius: 2px;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .btn-cta:active { transform: scale(0.98); }
-  .btn-cta-primary {
-    background: var(--gold); color: var(--ink);
-  }
-  .btn-cta-primary:hover { opacity: 0.88; }
-  .btn-cta-ghost {
-    background: transparent; color: var(--paper);
-    border: 1.5px solid rgba(245,240,232,0.3);
-  }
-  .btn-cta-ghost:hover { border-color: rgba(245,240,232,0.7); }
-
-  /* ── Footer ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 28px 20px;
-    text-align: center;
-  }
-  .footer-nav {
-    display: flex; justify-content: center;
-    flex-wrap: wrap; gap: 20px;
-    margin-bottom: 16px;
-  }
-  .footer-nav a {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    letter-spacing: 0.1em; color: var(--muted);
-    text-decoration: none; transition: color 0.15s;
-  }
-  .footer-nav a:hover { color: var(--ink); }
-  .footer-copy {
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    color: var(--muted); letter-spacing: 0.08em;
-  }
-
-  @media (max-width: 420px) {
-    .hero { padding: 48px 20px 40px; }
-    .cta-buttons { flex-direction: column; align-items: stretch; }
-    .btn-cta { text-align: center; }
-    .tool-card-tag { display: none; }
-  }
-</style>
+<link rel="stylesheet" href="common.css">
 </head>
-<body>
+<body data-page="home">
 
 <!-- Hero -->
-<a href="/" class="hero-link">  
-<section class="hero">
-  <div class="hero-label">Free Tools for Web Writers</div>
-  <h1>Webライター向け<br><em>無料</em>収入改善ツール</h1>
-  <p class="hero-sub">
-    文字単価・実質時給・月収を数字で見える化。<br>
-    フリーランスライターの単価交渉と収入アップを、無料ツールでサポートします。
-  </p>
-  <div class="hero-badges">
-    <span class="hero-badge">実質時給</span>
-    <span class="hero-badge">文字単価</span>
-    <span class="hero-badge">月収シミュレーション</span>
-    <span class="hero-badge">単価アップ</span>
-    <span class="hero-badge">フリーランス</span>
-  </div>
-</section>
+<a href="/" class="hero-link">
+  <section class="hero">
+    <div class="hero-label">Free Tools for Web Writers</div>
+    <h1>Webライター向け<br><em>無料</em>収入改善ツール</h1>
+    <p class="hero-sub">
+      文字単価・実質時給・月収を数字で見える化。<br>
+      フリーランスライターの単価交渉と収入アップを、無料ツールでサポートします。
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge">実質時給</span>
+      <span class="hero-badge">文字単価</span>
+      <span class="hero-badge">月収シミュレーション</span>
+      <span class="hero-badge">単価アップ</span>
+      <span class="hero-badge">フリーランス</span>
+    </div>
+  </section>
 </a>
+
 <div class="container">
 
-  <!-- Tool cards -->
+  <!-- ツール一覧 -->
   <div class="section-label">ツール一覧</div>
   <div class="tools">
 
-    <!-- Card 1 -->
     <div class="tool-card">
       <div class="tool-card-header">
         <span class="tool-number">01</span>
@@ -383,7 +78,6 @@
       </div>
     </div>
 
-    <!-- Card 2 -->
     <div class="tool-card">
       <div class="tool-card-header">
         <span class="tool-number">02</span>
@@ -406,7 +100,7 @@
 
   </div>
 
-  <!-- Explain section -->
+  <!-- 解説 -->
   <div class="explain">
     <div class="explain-header">なぜ「数字の見える化」が重要なのか</div>
     <div class="explain-body">
@@ -432,9 +126,7 @@
           <span><strong>フリーランスとして長く続けるために</strong>。低単価案件を量でこなす働き方は消耗しやすく、長続きしません。単価を上げて持続可能な収入設計をすることが、フリーランスとして安定する近道です。</span>
         </div>
       </div>
-      <p>
-        まずはツールを使って、自分の現在地を数字で確認することから始めましょう。
-      </p>
+      <p>まずはツールを使って、自分の現在地を数字で確認することから始めましょう。</p>
     </div>
   </div>
 
@@ -451,14 +143,6 @@
 
 </div>
 
-<!-- Footer -->
-<footer>
-  <nav class="footer-nav">
-    <a href="real-jikyuu.html">実質時給計算機</a>
-    <a href="raise-price.html">単価アップ診断</a>
-  </nav>
-  <p class="footer-copy">&copy; 2025 Webライター向け無料ツール</p>
-</footer>
-
+<script src="common.js"></script>
 </body>
 </html>
