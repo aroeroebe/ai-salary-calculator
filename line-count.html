@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向け行数カウンター｜テキストの行数を即カウント【無料】</title>
+<meta name="description" content="Webライター向けの無料行数カウンターツール。テキストを貼るだけで総行数・空行を除いた実行数をリアルタイム計算。原稿管理や入稿前チェックに便利です。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向け行数カウンター｜テキストの行数を即カウント【無料】">
+<meta property="og:description" content="テキストを貼るだけで総行数・実行数をリアルタイム計算できる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/line-count.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/line-count.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向け行数カウンター",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/line-count.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "テキストを貼るだけで総行数・実行数をリアルタイム計算できる無料ツール。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<!-- common.css を <link> で読み込む。<script> タグは誤りなので使わないこと -->
+<link rel="stylesheet" href="common.css">
+<style>
+  .textarea-main {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.8;
+    min-height: 160px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .textarea-main:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+  .textarea-counter {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body data-page="tool" data-title="行数カウンター" data-subtitle="テキストを貼るだけで行数をリアルタイム計算">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">テキスト入力</div>
+      <div class="field">
+        <label for="inputText">カウントするテキスト</label>
+        <textarea id="inputText"
+          placeholder="ここに記事のテキストを貼り付けてください"
+          rows="8"
+          class="textarea-main"
+          aria-describedby="textareaCounter"></textarea>
+        <div class="textarea-counter" id="textareaCounter" aria-live="polite">0 行</div>
+      </div>
+    </div>
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード（リアルタイムのため最初から表示） -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">カウント結果</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">総行数</div>
+          <div class="metric-value" id="totalLines">
+            0<span class="metric-unit">行</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">実行数（空行除く）</div>
+          <div class="metric-value highlight" id="netLines">
+            0<span class="metric-unit">行</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">空行数</div>
+          <div class="metric-value" id="emptyLines">
+            0<span class="metric-unit">行</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">行数の把握がライターの入稿ミスを防ぐ</div>
+    <div class="explain-body">
+      <h2>行数カウントは、入稿・納品前の最終チェックに欠かせません</h2>
+      <p>
+        媒体やクライアントによっては、文字数だけでなく「行数」での管理を求められることがあります。特にコラムや読みやすさを重視した記事では、1行の長さと行数が読者体験に直結します。
+      </p>
+      <p>
+        このツールはテキストを貼り付けるだけでリアルタイムに総行数・空行を除いた実行数・空行数を集計します。入稿前のチェックにそのままお使いください。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>総行数と実行数の違いを知る</strong>。総行数には空行も含まれます。実際の文章量を把握するには空行を除いた実行数が重要です。空行が多すぎると見栄えが悪くなることもあります。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>媒体指定の行数に対応する</strong>。媒体によっては「30行以内」など行数制限がある場合があります。入稿前にこのツールで確認することで、差し戻しリスクを減らせます。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>空行の使いすぎに気づける</strong>。空行が多いと読みやすさは上がりますが、水増しと判断されることもあります。空行数を数値で把握しておくことで、適切なバランスを保てます。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>文字数カウンターと合わせて使う</strong>。行数と文字数を組み合わせることで、1行あたりの平均文字数も把握できます。読みやすい記事構成の指標にしてみてください。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="word-count.html">文字数カウンター</a>・
+        <a href="real-jikyuu.html">実質時給計算機</a>・
+        <a href="raise-price.html">単価アップ診断</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:line-count');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_line-count_v1';
+
+  /* ── GA イベント送信（30秒スロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('line-count');
+      lastTracked = now;
+    }
+  }
+
+  /* ── リアルタイムカウント ── */
+  function calculate() {
+    var text  = el('inputText').value;
+
+    /* 行分割（末尾の改行で余分な空行が出ないよう調整） */
+    var lines = text === '' ? [] : text.split('\n');
+    var total = lines.length;
+    var empty = lines.filter(function(l) { return l.trim() === ''; }).length;
+    var net   = total - empty;
+
+    /* テキストエリア下ミニカウンター */
+    el('textareaCounter').textContent = total.toLocaleString('ja-JP') + ' 行';
+
+    /* メトリクス更新 */
+    el('totalLines').innerHTML  =
+      total.toLocaleString('ja-JP') + '<span class="metric-unit">行</span>';
+    el('netLines').innerHTML    =
+      net.toLocaleString('ja-JP')   + '<span class="metric-unit">行</span>';
+    el('emptyLines').innerHTML  =
+      empty.toLocaleString('ja-JP') + '<span class="metric-unit">行</span>';
+
+    /* GA（テキストがあるときのみ・30秒スロットル） */
+    if (total > 0) throttledTrack();
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    el('inputText').value = '';
+    el('textareaCounter').textContent = '0 行';
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  calculate();
+
+  /* ── イベント登録 ── */
+  el('inputText').addEventListener('input', calculate);
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
