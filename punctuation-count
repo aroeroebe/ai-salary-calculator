@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向け句読点カウンター｜テキストの句読点を即カウント【無料】</title>
+<meta name="description" content="Webライター向けの無料句読点カウンターツール。テキストを貼るだけで句点（。）・読点（、）・合計をリアルタイム計算。句読点の使いすぎや不足を即チェックできます。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向け句読点カウンター｜テキストの句読点を即カウント【無料】">
+<meta property="og:description" content="テキストを貼るだけで句点・読点・合計をリアルタイム計算できる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/punctuation-count.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/punctuation-count.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向け句読点カウンター",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/punctuation-count.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "テキストを貼るだけで句点・読点・合計をリアルタイム計算できる無料ツール。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .textarea-main {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.8;
+    min-height: 160px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .textarea-main:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+  .textarea-counter {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body data-page="tool" data-title="句読点カウンター" data-subtitle="テキストを貼るだけで句読点をリアルタイム計算">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">テキスト入力</div>
+      <div class="field">
+        <label for="inputText">カウントするテキスト</label>
+        <textarea id="inputText"
+          placeholder="ここに記事のテキストを貼り付けてください"
+          rows="8"
+          class="textarea-main"
+          aria-describedby="textareaCounter"></textarea>
+        <div class="textarea-counter" id="textareaCounter" aria-live="polite">句読点 0 個</div>
+      </div>
+    </div>
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード（リアルタイムのため最初から表示） -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">カウント結果</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">句点（。）</div>
+          <div class="metric-value" id="kutenCount">
+            0<span class="metric-unit">個</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">読点（、）</div>
+          <div class="metric-value" id="totenCount">
+            0<span class="metric-unit">個</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">句読点合計</div>
+          <div class="metric-value highlight" id="totalCount">
+            0<span class="metric-unit">個</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">読点の割合</div>
+          <div class="metric-value" id="totenRatio">
+            —<span class="metric-unit">%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">句読点の使い方がライターの文章力を左右する</div>
+    <div class="explain-body">
+      <h2>句読点の数を把握することが、読みやすい文章への第一歩です</h2>
+      <p>
+        読点（、）が多すぎると文章がくどく感じられ、少なすぎると読みにくくなります。句点（。）が少ない場合は一文が長くなりすぎているサインです。<strong>句読点の数を数値で把握する</strong>ことで、文章の読みやすさを客観的に見直せます。
+      </p>
+      <p>
+        このツールはテキストを貼り付けるだけで句点・読点・合計・読点の割合をリアルタイムに集計します。クライアントへの納品前や自己添削のチェックにご活用ください。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>読点の多さは文章の冗長さに比例する</strong>。読点が多い文は一文が長く、読者が途中で意味を見失いやすくなります。読点の割合を確認して、文を分割できないか見直しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>句点の少なさは一文の長さを示す</strong>。句点が少ないほど一文が長い傾向があります。Webライティングでは1文を50〜60字以内に収めるのが読みやすさの目安です。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>媒体によって句読点ルールが異なる</strong>。クライアントによっては「読点は1文に2個まで」などのルールを設けていることがあります。納品前に自分の文章がルールに沿っているか確認しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>文字数カウンターと組み合わせて使う</strong>。文字数と句読点数を組み合わせると、1文あたりの平均的な句読点密度が分かります。読みやすさを数値で管理する習慣が文章力の向上につながります。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="word-count.html">文字数カウンター</a>・
+        <a href="line-count.html">行数カウンター</a>・
+        <a href="real-jikyuu.html">実質時給計算機</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:punctuation-count');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_punctuation-count_v1';
+
+  /* ── GA イベント送信（30秒スロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('punctuation-count');
+      lastTracked = now;
+    }
+  }
+
+  /* ── リアルタイムカウント ── */
+  function calculate() {
+    var text  = el('inputText').value;
+
+    /* 句点・読点をカウント */
+    var kuten = (text.match(/。/g) || []).length;
+    var toten = (text.match(/、/g) || []).length;
+    var total = kuten + toten;
+
+    /* 読点の割合（句読点合計に対する読点の比率） */
+    var ratio = total > 0 ? (toten / total * 100) : null;
+
+    /* テキストエリア下ミニカウンター */
+    el('textareaCounter').textContent = '句読点 ' + total.toLocaleString('ja-JP') + ' 個';
+
+    /* メトリクス更新 */
+    el('kutenCount').innerHTML =
+      kuten.toLocaleString('ja-JP') + '<span class="metric-unit">個</span>';
+    el('totenCount').innerHTML =
+      toten.toLocaleString('ja-JP') + '<span class="metric-unit">個</span>';
+    el('totalCount').innerHTML =
+      total.toLocaleString('ja-JP') + '<span class="metric-unit">個</span>';
+    el('totenRatio').innerHTML =
+      (ratio !== null ? ratio.toFixed(1) : '—') + '<span class="metric-unit">%</span>';
+
+    /* GA（句読点があるときのみ・30秒スロットル） */
+    if (total > 0) throttledTrack();
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    el('inputText').value = '';
+    el('textareaCounter').textContent = '句読点 0 個';
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  calculate();
+
+  /* ── イベント登録 ── */
+  el('inputText').addEventListener('input', calculate);
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
