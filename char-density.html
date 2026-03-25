@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向け文字密度チェッカー｜テキストの密度・平均文字数を即計算【無料】</title>
+<meta name="description" content="Webライター向けの無料文字密度チェッカー。テキストを貼るだけで文字密度・1行あたりの平均文字数・総文字数をリアルタイム計算。空白や改行の多すぎをチェックできます。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向け文字密度チェッカー｜テキストの密度・平均文字数を即計算【無料】">
+<meta property="og:description" content="テキストを貼るだけで文字密度・1行あたり平均文字数をリアルタイム計算できる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/char-density.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/char-density.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向け文字密度チェッカー",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/char-density.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "テキストを貼るだけで文字密度・1行あたり平均文字数をリアルタイム計算できる無料ツール。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .textarea-main {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.8;
+    min-height: 160px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .textarea-main:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+  .textarea-counter {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+  /* 密度インジケーター */
+  .density-bar-wrap {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .density-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .density-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .density-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.22,1,0.36,1), background-color 0.3s;
+    width: 0%;
+  }
+  .density-bar-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body data-page="tool" data-title="文字密度チェッカー" data-subtitle="テキストを貼るだけで文字密度・平均文字数をリアルタイム計算">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">テキスト入力</div>
+      <div class="field">
+        <label for="inputText">カウントするテキスト</label>
+        <textarea id="inputText"
+          placeholder="ここに記事のテキストを貼り付けてください"
+          rows="8"
+          class="textarea-main"
+          aria-describedby="textareaCounter"></textarea>
+        <div class="textarea-counter" id="textareaCounter" aria-live="polite">密度 —%</div>
+      </div>
+    </div>
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード（リアルタイムのため最初から表示） -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">計測結果</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">文字密度</div>
+          <div class="metric-value highlight" id="densityVal">
+            —<span class="metric-unit">%</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">1行あたり平均文字数</div>
+          <div class="metric-value" id="avgCharsPerLine">
+            —<span class="metric-unit">字</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">総文字数</div>
+          <div class="metric-value" id="totalChars">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">実用文字数</div>
+          <div class="metric-value" id="netChars">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 密度ゲージ -->
+      <div class="density-bar-wrap">
+        <div class="density-bar-label">文字密度ゲージ</div>
+        <div class="density-bar-track">
+          <div class="density-bar-fill" id="densityBar"></div>
+        </div>
+        <div class="density-bar-ticks">
+          <span>0%</span>
+          <span>空白多め 50%</span>
+          <span>適正 75%</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">文字密度が低いと読者は離れる</div>
+    <div class="explain-body">
+      <h2>空白や改行の多さは、記事の「薄さ」として読者に伝わります</h2>
+      <p>
+        文字密度とは、総文字数に対して実際に意味を持つ文字（スペース・改行を除いた文字）が占める割合です。<strong>密度が低いほど、空行や余白が多く情報量の少ない記事</strong>になりがちです。
+      </p>
+      <p>
+        一般的なWebライティングでは文字密度70〜85%程度が読みやすさと情報量のバランスが取れた目安です。このツールで自分の記事の傾向を把握し、適切な密度に整えましょう。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>密度が低すぎる（〜60%）</strong>。空行や余白が多すぎる状態です。読みやすさは上がりますが、情報量が薄くなりSEO評価にも影響することがあります。段落の整理を検討しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>適正な密度（70〜85%）</strong>。読みやすさと情報量のバランスが取れた範囲です。Webライティングの目安としてこのゾーンを意識すると、クライアントからの修正依頼が減ります。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>密度が高すぎる（90%〜）</strong>。改行や空白が少なく、文章が詰まりすぎている状態です。スマートフォンでは特に読みにくくなるため、適度な改行を追加しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>1行あたりの平均文字数も確認する</strong>。平均文字数が多いほど1行が長く読みにくくなります。Webライティングでは1行20〜40字程度を目安に、適度に改行を入れると読者が離脱しにくくなります。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="word-count.html">文字数カウンター</a>・
+        <a href="line-count.html">行数カウンター</a>・
+        <a href="real-jikyuu.html">実質時給計算機</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:char-density');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_char-density_v1';
+
+  /* ── GA イベント送信（30秒スロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('char-density');
+      lastTracked = now;
+    }
+  }
+
+  /* ── 密度ゲージ更新 ── */
+  function updateBar(pct) {
+    var fill = el('densityBar');
+    fill.style.width = Math.min(pct, 100).toFixed(1) + '%';
+    if (pct >= 85)       fill.style.backgroundColor = 'var(--warn)';
+    else if (pct >= 70)  fill.style.backgroundColor = 'var(--good)';
+    else if (pct >= 50)  fill.style.backgroundColor = '#d4a853';
+    else                 fill.style.backgroundColor = 'var(--accent)';
+  }
+
+  /* ── リアルタイム計算 ── */
+  function calculate() {
+    var text = el('inputText').value;
+
+    /* 総文字数 */
+    var total = text.length;
+
+    /* 実用文字数（スペース・改行・タブ・全角スペースを除く） */
+    var net = text.replace(/[\s\u3000]/g, '').length;
+
+    /* 文字密度 */
+    var density = total > 0 ? (net / total * 100) : null;
+
+    /* 実質行数（空行除く）で平均文字数を算出 */
+    var rawLines = text === '' ? [] : text.split(/\r?\n/);
+    while (rawLines.length > 0 && rawLines[rawLines.length - 1] === '') {
+      rawLines.pop();
+    }
+    var netLines = rawLines.filter(function(l) { return l.trim() !== ''; }).length;
+    var avgChars = netLines > 0 ? (net / netLines) : null;
+
+    /* テキストエリア下ミニカウンター */
+    el('textareaCounter').textContent =
+      density !== null ? ('密度 ' + density.toFixed(1) + '%') : '密度 —%';
+
+    /* メトリクス更新 */
+    el('densityVal').innerHTML =
+      (density !== null ? density.toFixed(1) : '—') + '<span class="metric-unit">%</span>';
+    el('avgCharsPerLine').innerHTML =
+      (avgChars !== null ? avgChars.toFixed(1) : '—') + '<span class="metric-unit">字</span>';
+    el('totalChars').innerHTML =
+      total.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+    el('netChars').innerHTML =
+      net.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+
+    /* ゲージ更新 */
+    updateBar(density !== null ? density : 0);
+
+    /* GA（テキストがあるときのみ・30秒スロットル） */
+    if (total > 0) throttledTrack();
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    el('inputText').value = '';
+    el('textareaCounter').textContent = '密度 —%';
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  calculate();
+
+  /* ── イベント登録 ── */
+  el('inputText').addEventListener('input', calculate);
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
