@@ -168,7 +168,9 @@ body {
 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* ── Tool cards (index) ── */
-.tools { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
+.tools { display: grid;
+  grid-template-columns: 1fr 1fr;  ← これを追加
+  gap: 16px; }
 .tool-card {
   background: #fff; border: 1px solid var(--border); border-radius: 2px;
   box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
