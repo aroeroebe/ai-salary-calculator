@@ -22,6 +22,16 @@
 }
 </script>
 <link rel="stylesheet" href="common.css">
+  <style>
+  .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 48px; }
+  .tool-card-title { font-size: 14px; }
+  .tool-number { font-size: 20px; }
+  @media (max-width: 560px) {
+    .tools { grid-template-columns: 1fr; }
+    .tool-card-title { font-size: 18px; }
+    .tool-number { font-size: 28px; }
+  }
+</style>
 </head>
 <body data-page="home">
 
@@ -147,6 +157,7 @@
     </div>
     <a href="punctuation-count.html" class="btn-tool">句読点をカウントする</a>
   </div>
+      </div>
           <div class="tool-card">
       <div class="tool-card-header">
         <span class="tool-number">06</span>
