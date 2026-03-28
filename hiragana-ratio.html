@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向けひらがな率チェッカー｜テキストのひらがな比率を即計算【無料】</title>
+<meta name="description" content="Webライター向けの無料ひらがな率チェッカー。テキストを貼るだけでひらがな率・ひらがな数・カタカナ数をリアルタイム計算。読みやすさの目安として活用できます。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向けひらがな率チェッカー｜テキストのひらがな比率を即計算【無料】">
+<meta property="og:description" content="テキストを貼るだけでひらがな率・ひらがな数・カタカナ数をリアルタイム計算できる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/hiragana-ratio.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/hiragana-ratio.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向けひらがな率チェッカー",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/hiragana-ratio.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "テキストを貼るだけでひらがな率・ひらがな数・カタカナ数をリアルタイム計算できる無料ツール。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .textarea-main {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.8;
+    min-height: 160px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .textarea-main:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+  .textarea-counter {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+  /* ひらがな率ゲージ */
+  .ratio-bar-wrap {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .ratio-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ratio-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .ratio-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.22,1,0.36,1), background-color 0.3s;
+    width: 0%;
+  }
+  .ratio-bar-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body data-page="tool" data-title="ひらがな率チェッカー" data-subtitle="テキストを貼るだけでひらがな率をリアルタイム計算">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">テキスト入力</div>
+      <div class="field">
+        <label for="inputText">カウントするテキスト</label>
+        <textarea id="inputText"
+          placeholder="ここに記事のテキストを貼り付けてください"
+          rows="8"
+          class="textarea-main"
+          aria-describedby="textareaCounter"></textarea>
+        <div class="textarea-counter" id="textareaCounter" aria-live="polite">ひらがな率 —%</div>
+      </div>
+    </div>
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- 結果カード（リアルタイムのため最初から表示） -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">計測結果</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">ひらがな率</div>
+          <div class="metric-value highlight" id="hiraganaRatio">
+            —<span class="metric-unit">%</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">ひらがな数</div>
+          <div class="metric-value" id="hiraganaCount">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">カタカナ数</div>
+          <div class="metric-value" id="katakanaCount">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">総文字数</div>
+          <div class="metric-value" id="totalChars">
+            0<span class="metric-unit">字</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ひらがな率ゲージ -->
+      <div class="ratio-bar-wrap">
+        <div class="ratio-bar-label">ひらがな率ゲージ</div>
+        <div class="ratio-bar-track">
+          <div class="ratio-bar-fill" id="ratioBar"></div>
+        </div>
+        <div class="ratio-bar-ticks">
+          <span>0%</span>
+          <span>少なめ 30%</span>
+          <span>適正 50%</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">ひらがな率が読みやすさを左右する</div>
+    <div class="explain-body">
+      <h2>ひらがなの割合を意識することが、やわらかく読みやすい文章への近道です</h2>
+      <p>
+        一般的なWebライティングでは、ひらがな率が高いほど文章がやわらかく親しみやすい印象になります。逆に漢字が多すぎると読みにくく、離脱率が上がる傾向があります。<strong>ひらがな率の目安は40〜60%</strong>と言われています。
+      </p>
+      <p>
+        このツールはテキストを貼り付けるだけでリアルタイムにひらがな率・ひらがな数・カタカナ数・総文字数を集計します。ゲージで視覚的に確認しながら、文章の読みやすさを調整してください。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>ひらがな率40〜60%が読みやすさの目安</strong>。この範囲に収まると、漢字の難しさとひらがなのやわらかさのバランスが取れた文章になりやすいです。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>漢字が多すぎると離脱率が上がる</strong>。ひらがな率が30%以下の場合、漢字だらけで読みにくい文章になっている可能性があります。漢字をひらがなに開くことを検討しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>媒体によって適切な率が異なる</strong>。ビジネス向けのコラムは漢字多め、生活情報系はひらがな多めが自然です。クライアントの媒体トーンに合わせて調整しましょう。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>文字密度チェッカーと組み合わせて使う</strong>。ひらがな率と文字密度を合わせて確認することで、読みやすさをより多角的に把握できます。納品前の最終チェックに活用してください。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="char-density.html">文字密度チェッカー</a>・
+        <a href="word-count.html">文字数カウンター</a>・
+        <a href="real-jikyuu.html">実質時給計算機</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:hiragana-ratio');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_hiragana-ratio_v1';
+
+  /* ── GA イベント送信（30秒スロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('hiragana-ratio');
+      lastTracked = now;
+    }
+  }
+
+  /* ── ゲージ更新 ── */
+  function updateBar(pct) {
+    var fill = el('ratioBar');
+    fill.style.width = Math.min(pct, 100).toFixed(1) + '%';
+    if (pct >= 40 && pct <= 60) fill.style.backgroundColor = 'var(--good)';
+    else if (pct >= 30 && pct < 40) fill.style.backgroundColor = '#d4a853';
+    else if (pct > 60 && pct <= 70) fill.style.backgroundColor = '#d4a853';
+    else                             fill.style.backgroundColor = 'var(--warn)';
+  }
+
+  /* ── リアルタイム計算 ── */
+  function calculate() {
+    var text = el('inputText').value;
+    var total = text.length;
+
+    /* ひらがな: U+3041〜U+3096 */
+    var hiragana = (text.match(/[\u3041-\u3096]/g) || []).length;
+    /* カタカナ: U+30A1〜U+30FA */
+    var katakana = (text.match(/[\u30A1-\u30FA]/g) || []).length;
+
+    /* ひらがな率（総文字数に対する比率） */
+    var ratio = total > 0 ? (hiragana / total * 100) : null;
+
+    /* テキストエリア下ミニカウンター */
+    el('textareaCounter').textContent =
+      ratio !== null ? ('ひらがな率 ' + ratio.toFixed(1) + '%') : 'ひらがな率 —%';
+
+    /* メトリクス更新 */
+    el('hiraganaRatio').innerHTML =
+      (ratio !== null ? ratio.toFixed(1) : '—') + '<span class="metric-unit">%</span>';
+    el('hiraganaCount').innerHTML =
+      hiragana.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+    el('katakanaCount').innerHTML =
+      katakana.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+    el('totalChars').innerHTML =
+      total.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+
+    /* ゲージ更新 */
+    updateBar(ratio !== null ? ratio : 0);
+
+    /* GA（テキストがあるときのみ・30秒スロットル） */
+    if (total > 0) throttledTrack();
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    el('inputText').value = '';
+    el('textareaCounter').textContent = 'ひらがな率 —%';
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  calculate();
+
+  /* ── イベント登録 ── */
+  el('inputText').addEventListener('input', calculate);
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
