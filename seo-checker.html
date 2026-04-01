@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webライター向けSEO文字数チェッカー｜title・description・H1・本文を即チェック【無料】</title>
+<meta name="description" content="Webライター向けの無料SEO文字数チェッカー。titleタグ・metaディスクリプション・H1・本文の文字数をリアルタイムチェック。SEOの目安に対してOK/NGを即判定します。">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Webライター向けSEO文字数チェッカー｜title・description・H1・本文を即チェック【無料】">
+<meta property="og:description" content="titleタグ・metaディスクリプション・H1・本文の文字数をリアルタイムでSEO目安チェックできる無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://writer-salary-calculator.babynakunaku.workers.dev/seo-checker.html">
+<meta property="og:image" content="https://writer-salary-calculator.babynakunaku.workers.dev/ogp.jpg">
+<link rel="canonical" href="https://writer-salary-calculator.babynakunaku.workers.dev/seo-checker.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Webライター向けSEO文字数チェッカー",
+  "url": "https://writer-salary-calculator.babynakunaku.workers.dev/seo-checker.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "titleタグ・metaディスクリプション・H1・本文の文字数をリアルタイムでSEO目安チェックできる無料ツール。",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<link rel="stylesheet" href="common.css">
+<style>
+  /* SEOフィールド */
+  .seo-field {
+    margin-bottom: 20px;
+  }
+  .seo-field:last-child { margin-bottom: 0; }
+
+  .seo-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .seo-field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .seo-field-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .seo-char-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .seo-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 10px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .seo-badge.ok   { background: rgba(45,106,79,0.12);  color: var(--good); }
+  .seo-badge.warn { background: rgba(212,168,83,0.18); color: #9a7000; }
+  .seo-badge.ng   { background: rgba(200,75,49,0.1);   color: var(--accent); }
+  .seo-badge.empty{ background: var(--border);          color: var(--muted); }
+
+  /* SEO目安バー */
+  .seo-bar-wrap {
+    margin-top: 5px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .seo-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s, background-color 0.3s;
+  }
+
+  /* 目安注記 */
+  .seo-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+
+  /* input（1行） */
+  .seo-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .seo-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+
+  /* textarea（本文） */
+  .seo-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.7;
+    min-height: 100px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .seo-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,75,49,0.1);
+    background: #fff;
+  }
+
+  /* サマリーバッジ */
+  .summary-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .summary-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .summary-chip .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body data-page="tool" data-title="SEO文字数チェッカー" data-subtitle="title・description・H1・本文をリアルタイムSEOチェック">
+
+<div class="container-tool">
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-section">
+      <div class="section-title">SEO項目の入力</div>
+
+      <!-- titleタグ -->
+      <div class="seo-field">
+        <div class="seo-field-header">
+          <span class="seo-field-label">titleタグ</span>
+          <div class="seo-field-meta">
+            <span class="seo-char-count" id="titleCount">0字</span>
+            <span class="seo-badge empty" id="titleBadge">未入力</span>
+          </div>
+        </div>
+        <input type="text" id="titleInput" class="seo-input"
+               placeholder="記事タイトルを入力してください" autocomplete="off">
+        <div class="seo-bar-wrap"><div class="seo-bar-fill" id="titleBar" style="width:0%"></div></div>
+        <div class="seo-hint" id="titleHint">目安：30〜35字（最大60字）</div>
+      </div>
+
+      <!-- metaディスクリプション -->
+      <div class="seo-field">
+        <div class="seo-field-header">
+          <span class="seo-field-label">metaディスクリプション</span>
+          <div class="seo-field-meta">
+            <span class="seo-char-count" id="descCount">0字</span>
+            <span class="seo-badge empty" id="descBadge">未入力</span>
+          </div>
+        </div>
+        <input type="text" id="descInput" class="seo-input"
+               placeholder="ページの説明文を入力してください" autocomplete="off">
+        <div class="seo-bar-wrap"><div class="seo-bar-fill" id="descBar" style="width:0%"></div></div>
+        <div class="seo-hint" id="descHint">目安：70〜120字（最大160字）</div>
+      </div>
+
+      <!-- H1見出し -->
+      <div class="seo-field">
+        <div class="seo-field-header">
+          <span class="seo-field-label">H1見出し</span>
+          <div class="seo-field-meta">
+            <span class="seo-char-count" id="h1Count">0字</span>
+            <span class="seo-badge empty" id="h1Badge">未入力</span>
+          </div>
+        </div>
+        <input type="text" id="h1Input" class="seo-input"
+               placeholder="H1見出しを入力してください" autocomplete="off">
+        <div class="seo-bar-wrap"><div class="seo-bar-fill" id="h1Bar" style="width:0%"></div></div>
+        <div class="seo-hint" id="h1Hint">目安：20〜40字</div>
+      </div>
+
+      <!-- 本文 -->
+      <div class="seo-field">
+        <div class="seo-field-header">
+          <span class="seo-field-label">本文</span>
+          <div class="seo-field-meta">
+            <span class="seo-char-count" id="bodyCount">0字</span>
+            <span class="seo-badge empty" id="bodyBadge">未入力</span>
+          </div>
+        </div>
+        <textarea id="bodyInput" class="seo-textarea" rows="5"
+                  placeholder="本文を貼り付けてください"></textarea>
+        <div class="seo-bar-wrap"><div class="seo-bar-fill" id="bodyBar" style="width:0%"></div></div>
+        <div class="seo-hint" id="bodyHint">目安：記事本文（見出し除く）2,000字以上・上位表示狙いは3,000字以上</div>
+      </div>
+
+    </div>
+
+    <div class="btn-area">
+      <div class="btn-row">
+        <button id="resetBtn" type="button" class="btn-ghost">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- エラー表示 -->
+  <div id="errorNote" class="error-note" role="alert" aria-live="assertive"></div>
+
+  <!-- サマリーカード -->
+  <div class="result-card" id="result"
+       role="status" aria-live="polite" aria-atomic="true"
+       style="display:block; margin-top:20px;">
+    <div class="result-header">チェック結果サマリー</div>
+    <div class="result-body">
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">titleタグ</div>
+          <div class="metric-value" id="summaryTitle">—<span class="metric-unit">字</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">description</div>
+          <div class="metric-value" id="summaryDesc">—<span class="metric-unit">字</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">H1見出し</div>
+          <div class="metric-value" id="summaryH1">—<span class="metric-unit">字</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">本文</div>
+          <div class="metric-value highlight" id="summaryBody">—<span class="metric-unit">字</span></div>
+        </div>
+      </div>
+
+      <!-- 総合ステータス -->
+      <div class="summary-row" id="summaryRow">
+        <div class="summary-chip" id="chipTitle">
+          <span class="dot" style="background:var(--muted)"></span>title
+        </div>
+        <div class="summary-chip" id="chipDesc">
+          <span class="dot" style="background:var(--muted)"></span>description
+        </div>
+        <div class="summary-chip" id="chipH1">
+          <span class="dot" style="background:var(--muted)"></span>H1
+        </div>
+        <div class="summary-chip" id="chipBody">
+          <span class="dot" style="background:var(--muted)"></span>本文
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 解説セクション -->
+  <div class="explain" style="margin-top:20px;">
+    <div class="explain-header">SEO文字数の目安を知っておくことが納品品質を上げる</div>
+    <div class="explain-body">
+      <h2>Googleに評価される文字数の基準を、ライターとして把握しておきましょう</h2>
+      <p>
+        SEOを意識したWebライティングでは、本文の量だけでなくtitleやdescriptionの文字数も重要です。<strong>文字数が少なすぎると検索エンジンに自動補完される</strong>場合があり、意図したSEO効果が出ないことがあります。
+      </p>
+      <p>
+        このツールは入力のたびにリアルタイムでSEOの文字数目安を判定します。OK・要調整・NGの3段階バッジで一目で確認できるので、納品前のセルフチェックにそのままお使いください。
+      </p>
+      <div class="explain-points">
+        <div class="explain-point">
+          <span class="explain-point-num">01</span>
+          <span><strong>titleタグは30〜35字が目安</strong>。Googleの検索結果で表示される上限は全角約30〜35字とされています。長すぎると末尾が「...」で切れてしまい、クリック率に影響します。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">02</span>
+          <span><strong>metaディスクリプションは70〜120字が目安</strong>。検索結果のスニペットとして表示されます。短すぎるとGoogleが本文から自動生成し、意図しない文章が表示される場合があります。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">03</span>
+          <span><strong>本文は2,000字以上が基本</strong>。上位表示を狙うなら3,000字以上が目安になることが多いです。ただし薄い内容を水増しするよりも、情報の質を優先することが重要です。</span>
+        </div>
+        <div class="explain-point">
+          <span class="explain-point-num">04</span>
+          <span><strong>文字数はあくまで目安</strong>。これらの数値はGoogleの公式基準ではなく、現場での経験則です。クライアントや媒体のガイドラインを優先しながら、参考指標として活用してください。</span>
+        </div>
+      </div>
+      <p class="related-link">
+        関連ツール：
+        <a href="word-count.html">文字数カウンター</a>・
+        <a href="reading-time.html">読了時間チェッカー</a>・
+        <a href="real-jikyuu.html">実質時給計算機</a>も合わせてご活用ください。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- GA・ヘッダー・パンくず・フッターは common.js が自動挿入する -->
+<script src="common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  console.log('tool-ready:seo-checker');
+
+  var el = function(id) { return document.getElementById(id); };
+  var LS_KEY = 'writer_seo-checker_v1';
+
+  /* ── SEO目安定義 ── */
+  var RULES = {
+    title: { min: 30, ok: 35,  max: 60  },
+    desc:  { min: 70, ok: 120, max: 160 },
+    h1:    { min: 20, ok: 40,  max: 60  },
+    body:  { min: 2000, ok: 3000, max: 99999 }
+  };
+
+  /* ── GA イベント送信（30秒スロットル） ── */
+  var lastTracked = 0;
+  function throttledTrack() {
+    var now = Date.now();
+    if (now - lastTracked > 30000) {
+      window.trackCalc && window.trackCalc('seo-checker');
+      lastTracked = now;
+    }
+  }
+
+  /* ── 1フィールド更新 ── */
+  function updateField(key, len) {
+    var rule     = RULES[key];
+    var countEl  = el(key + 'Count');
+    var badgeEl  = el(key + 'Badge');
+    var barEl    = el(key + 'Bar');
+
+    countEl.textContent = len + '字';
+
+    var badgeClass, badgeText, barColor, pct;
+
+    if (len === 0) {
+      badgeClass = 'empty'; badgeText = '未入力';
+      barColor = 'var(--border)'; pct = 0;
+    } else if (len < rule.min) {
+      badgeClass = 'ng'; badgeText = '短すぎ';
+      barColor = 'var(--accent)';
+      pct = Math.round(len / rule.min * 50);
+    } else if (len <= rule.ok) {
+      badgeClass = 'ok'; badgeText = 'OK';
+      barColor = 'var(--good)';
+      pct = Math.round(50 + (len - rule.min) / (rule.ok - rule.min) * 40);
+    } else if (len <= rule.max) {
+      badgeClass = 'warn'; badgeText = '要調整';
+      barColor = '#d4a853';
+      pct = Math.min(95, Math.round(90 + (len - rule.ok) / (rule.max - rule.ok) * 5));
+    } else {
+      badgeClass = 'ng'; badgeText = '長すぎ';
+      barColor = 'var(--accent)'; pct = 100;
+    }
+
+    badgeEl.className   = 'seo-badge ' + badgeClass;
+    badgeEl.textContent = badgeText;
+    barEl.style.width           = pct + '%';
+    barEl.style.backgroundColor = barColor;
+  }
+
+  /* ── 全フィールド計算 ── */
+  function calculate() {
+    var titleLen = el('titleInput').value.length;
+    var descLen  = el('descInput').value.length;
+    var h1Len    = el('h1Input').value.length;
+    var bodyLen  = el('bodyInput').value.length;
+
+    updateField('title', titleLen);
+    updateField('desc',  descLen);
+    updateField('h1',    h1Len);
+    updateField('body',  bodyLen);
+
+    /* サマリーメトリクス */
+    el('summaryTitle').innerHTML = titleLen.toLocaleString('ja-JP') + '<span class="metric-unit">字</span>';
+    el('summaryDesc').innerHTML  = descLen.toLocaleString('ja-JP')  + '<span class="metric-unit">字</span>';
+    el('summaryH1').innerHTML    = h1Len.toLocaleString('ja-JP')    + '<span class="metric-unit">字</span>';
+    el('summaryBody').innerHTML  = bodyLen.toLocaleString('ja-JP')  + '<span class="metric-unit">字</span>';
+
+    /* GA */
+    if (titleLen + descLen + h1Len + bodyLen > 0) throttledTrack();
+  }
+
+  /* ── localStorage 保存・復元 ── */
+  function saveInputs() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        title: el('titleInput').value,
+        desc:  el('descInput').value,
+        h1:    el('h1Input').value
+        /* 本文は保存しない */
+      }));
+    } catch(e) {}
+  }
+  function loadInputs() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var obj = JSON.parse(raw);
+      if (obj.title) el('titleInput').value = obj.title;
+      if (obj.desc)  el('descInput').value  = obj.desc;
+      if (obj.h1)    el('h1Input').value    = obj.h1;
+    } catch(e) {}
+  }
+
+  /* ── リセット ── */
+  function resetAll() {
+    ['titleInput','descInput','h1Input','bodyInput'].forEach(function(id) {
+      el(id).value = '';
+    });
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+    calculate();
+  }
+
+  /* ── 初期化 ── */
+  loadInputs();
+  calculate();
+
+  /* ── イベント登録 ── */
+  ['titleInput','descInput','h1Input'].forEach(function(id) {
+    el(id).addEventListener('input', function() { saveInputs(); calculate(); });
+  });
+  el('bodyInput').addEventListener('input', calculate);
+  el('resetBtn').addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
