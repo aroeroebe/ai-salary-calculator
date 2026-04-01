@@ -85,6 +85,7 @@ gtag('config', GA_ID);
         '<a href="/punctuation-count.html">句読点カウンター</a>' +
       　'<a href="/char-density.html">文字密度</a>' +
       　'<a href="/hiragana-ratio.html">ひらがな率チェッカー</a>' +
+      '<a href="/seo-checker.html">SEO文字数チェッカー</a>' +
       '</nav>' +
       '<p class="footer-copy">&copy; 2025 Webライター向け無料ツール</p>';
     document.body.appendChild(footer);
